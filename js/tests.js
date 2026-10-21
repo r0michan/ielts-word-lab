@@ -185,7 +185,7 @@
     if (ui.tt.end) timer = setInterval(tick, 500);
     render(); scrollTo(0, 0); autoplay();
   }
-  function autoplay() { const q = ui.tt?.qs[ui.tt.i]; if (q?.autoplay) setTimeout(() => speak(q.say), 300); }
+  function autoplay() {}   // audio plays only when the learner presses 再生
   function tick() {
     const t = ui.tt; if (!t || t.done) { clearInterval(timer); return; }
     const left = Math.max(0, t.end - Date.now()), el = document.getElementById('ttime');
@@ -218,6 +218,7 @@
       if (t.kind !== 'daily' && onProbation() && p <= FAIL && prevLv(S.lv.cur)) { done.demoted = [S.lv.cur, prevLv(S.lv.cur)]; setLevel(prevLv(S.lv.cur), `${DEF[t.kind].title} ${p}点（昇格後1か月以内に${FAIL}点以下）`, false); }
     }
     t.done = done;
+    if (done.promoted || done.placed || p === 100) SFX.fanfare(true); else if (done.demoted || done.pass === false) SFX.ng(); else if (p >= 80) SFX.fanfare(false); else SFX.pop();
     window.addXP?.(t.kind === 'place' || t.kind === 'levelup' || done.first ? DEF[t.kind].xp : 2, 'test'); save(); render(); scrollTo(0, 0);
   }
   function vRun() {
@@ -311,8 +312,8 @@
 
   Object.assign(ACT, {
     ttstart: x => start(x.k),
-    ttpick: x => { const t = ui.tt; t.picks[t.i] = +x.i; if (!DEF[t.kind].instant && t.i < t.qs.length - 1) { t.i++; render(); autoplay(); } else render(); },
-    ttsubmit: () => { const t = ui.tt, v = ($('#ttin')?.value || '').trim(); if (!v) return; t.typed[t.i] = v; if (!DEF[t.kind].instant && t.i < t.qs.length - 1) { t.i++; render(); autoplay(); } else render(); },
+    ttpick: x => { const t = ui.tt; t.picks[t.i] = +x.i; if (DEF[t.kind].instant) right(t, t.i) ? SFX.ok() : SFX.ng(); else SFX.pop(); if (!DEF[t.kind].instant && t.i < t.qs.length - 1) { t.i++; render(); autoplay(); } else render(); },
+    ttsubmit: () => { const t = ui.tt, v = ($('#ttin')?.value || '').trim(); if (!v) return; t.typed[t.i] = v; if (DEF[t.kind].instant) right(t, t.i) ? SFX.ok() : SFX.ng(); if (!DEF[t.kind].instant && t.i < t.qs.length - 1) { t.i++; render(); autoplay(); } else render(); },
     ttnext: () => { const t = ui.tt; if (t.qs[t.i].type === 'type' && t.typed[t.i] == null) { const v = ($('#ttin')?.value || '').trim(); if (v) t.typed[t.i] = v; } t.i = Math.min(t.i + 1, t.qs.length - 1); render(); autoplay(); },
     ttprev: () => { ui.tt.i = Math.max(0, ui.tt.i - 1); render(); },
     ttfinish: () => { const t = ui.tt; if (t.qs[t.i].type === 'type' && t.typed[t.i] == null) { const v = ($('#ttin')?.value || '').trim(); if (v) t.typed[t.i] = v; } finish(); },

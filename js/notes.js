@@ -90,7 +90,7 @@
   Object.assign(ACT, {
     njump: d => document.getElementById('n-' + d.k)?.scrollIntoView({behavior: 'smooth', block: 'start'}),
     nquiz: () => { ui.quizPool = collect().words; ui.quiz = null; S.tab = 'quiz'; save(); render(); scrollTo({top: 0}); },
-    qpoolclear: () => { ui.quizPool = null; ui.quiz = null; render(); },
+    qpoolclear: () => { ui.quizPool = null; ui.quizPoolLabel = null; ui.quiz = null; render(); },
     ncards: () => { collect().words.forEach(w => { const p = P(w.id); p.seen = Math.max(p.seen || 0, 1); p.box = Math.min(p.box || 0, 1); p.due = Date.now(); }); ui.cram = false; save(); S.tab = 'card'; render(); },
     nsent: d => { ui.sentPool = collect().sents; ui.sent.mode = d.m; ui.sent.src = 'pat'; ui.sent.item = null; S.tab = 'sent'; save(); render(); scrollTo({top: 0}); },
     spoolclear: () => { ui.sentPool = null; ui.sent.item = null; render(); },

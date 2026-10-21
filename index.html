@@ -618,7 +618,7 @@ function renderBand() {
 const NO_FILTER = ['write', 'speak', 'settings'];
 function renderFilters() {
   const el = $('#filters');
-  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab', 'tests'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
+  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab', 'tests', 'course'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
   if (el.hidden) return;
   const n = filtered().length;
   el.innerHTML = `
@@ -630,7 +630,7 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
   ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','スコア換算・試験比較',1,'exam'],['tests','デイリー・週間・月間テスト',1,'both'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 // Two-level navigation: mode → group pills → the group's tabs. A tab may sit in both modes (e.g. テスト, 記録).
@@ -658,7 +658,7 @@ function render() {
 }
 // horizontally scrolling rails: bring the selected item into view without moving the page vertically
 function keepPressedVisible() {
-  document.querySelectorAll('.tabrail, .seg').forEach(sc => {
+  document.querySelectorAll('.tabrail, .seg, .lvchips').forEach(sc => {
     const b = sc.querySelector('[aria-selected="true"], [aria-pressed="true"]'); if (!b || sc.scrollWidth <= sc.clientWidth) return;
     const br = b.getBoundingClientRect(), sr = sc.getBoundingClientRect();
     if (br.left < sr.left) sc.scrollLeft -= sr.left - br.left + 16; else if (br.right > sr.right) sc.scrollLeft += br.right - sr.right + 16;
@@ -731,7 +731,7 @@ function startQuiz(mode) {
 }
 function vQuiz() {
   const z = ui.quiz;
-  const poolNote = ui.quizPool ? `<div class="confirm" style="background:var(--accent-soft)">間違いノートの単語（${ui.quizPool.length}語）から出題します。<button class="btn" data-act="qpoolclear">通常の出題に戻す</button></div>` : '';
+  const poolNote = ui.quizPool ? `<div class="confirm" style="background:var(--accent-soft)">${ui.quizPoolLabel || '間違いノートの単語'}（${ui.quizPool.length}語）から出題します。<button class="btn" data-act="qpoolclear">通常の出題に戻す</button></div>` : '';
   if (!z || z.error) return `${poolNote}${z?.error ? `<p class="err">${z.error}</p>` : ''}<div class="modes">${Object.entries(QMODES).map(([k, m]) =>
     `<button class="mode" data-act="quiz" data-mode="${k}"><b>${m.name}</b><span class="muted small">${m.d}</span></button>`).join('')}</div>
     <p class="note">現在のフィルター（${filtered().length}語）から10問出題します。間違えた単語は単語カードの復習に戻ります。</p>`;
@@ -1596,11 +1596,15 @@ render();
 <script src="js/lessons.js"></script>
 <script src="js/images.js"></script>
 <script src="js/progress.js"></script>
+<script src="js/sfx.js"></script>
 <script src="data/drills.js"></script>
 <script src="data/drills2.js"></script>
 <script src="js/drills.js"></script>
 <script src="js/exams.js"></script>
 <script src="js/tests.js"></script>
+<script src="data/grammar1.js"></script>
+<script src="data/grammar2.js"></script>
+<script src="js/course.js"></script>
 <script src="js/shell.js"></script>
 </body>
 </html>

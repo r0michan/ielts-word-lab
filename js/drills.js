@@ -111,7 +111,7 @@
       d.res = {...r, near, ok: r.score === 100};
       tally('dict', it.id, r.score === 100);
     }
-    S.drill.dict.n++; S.drill.dict.sum += d.res.score; XP(1, 'dict'); save(); render();
+    S.drill.dict.n++; S.drill.dict.sum += d.res.score; XP(1, 'dict'); d.res.score >= 90 ? window.SFX?.ok() : window.SFX?.ng(); save(); render();
   }
   function vDict() {
     const d = ui.dc; if (!d.item) dcNew();
@@ -146,7 +146,7 @@
     dcplay: x => play(!!x.slow),
     dchint: () => { ui.dc.hint = true; render(); },
     dccheck: () => dcCheck(),
-    dcnext: () => { dcNew(); render(); $('#dcin')?.focus(); setTimeout(() => play(false), 250); },
+    dcnext: () => { dcNew(); render(); $('#dcin')?.focus(); },
   });
 
   window.DRILL = {PARA, COLL, UKUS, HARD, FORM, TOPIC, IELTS_GEN, tally};
@@ -177,7 +177,7 @@
     const v = ui.vd, q = v.q; if (!q || q.pick !== null) return;
     q.pick = i; const ok = q.opts[i] === q.ans;
     v.s.n++; if (ok) v.s.c++;
-    tally(q.kind === 'ukus' || q.kind === 'hard' ? 'spell' : q.kind === 'tphr' ? 'topic' : q.kind, q.it.id, ok); XP(1, 'vocab'); render();
+    tally(q.kind === 'ukus' || q.kind === 'hard' ? 'spell' : q.kind === 'tphr' ? 'topic' : q.kind, q.it.id, ok); XP(1, 'vocab'); ok ? window.SFX?.ok() : window.SFX?.ng(); render();
   }
   function vdListenCheck() {
     const v = ui.vd, q = v.q; if (!q || q.pick !== null) return;
@@ -185,7 +185,7 @@
     const t = q.typed.toLowerCase(), it = q.it;
     q.okWord = it.uk ? (t === it.uk.toLowerCase() ? 'uk' : t === it.us.toLowerCase() ? 'us' : '') : (t === it.w.toLowerCase() ? 'ok' : '');
     q.pick = 0; v.s.n++; if (q.okWord) v.s.c++;
-    tally('spell', 'ls:' + it.id, !!q.okWord); XP(1, 'vocab'); render();
+    tally('spell', 'ls:' + it.id, !!q.okWord); XP(1, 'vocab'); q.okWord ? window.SFX?.ok() : window.SFX?.ng(); render();
   }
   const sayWord = it => it.uk ? (S.settings.accent === 'en-US' ? it.us : it.uk) : it.w;
   function vdQuestion() {
@@ -272,7 +272,7 @@
     vdtopic: x => { ui.vd.topic = x.k; ui.vd.q = null; render(); },
     vdtquiz: () => { ui.vd.tquiz = !ui.vd.tquiz; ui.vd.q = null; vdNew(); render(); },
     vdtopicquiz: x => { S.topic = x.tag; ui.quiz = null; save(); ACT.tab({tab: 'quiz'}); },
-    vdnext: () => { vdNew(); render(); if (ui.vd.q.kind === 'listen') { $('#vdin')?.focus(); setTimeout(() => speak(sayWord(ui.vd.q.it)), 250); } },
+    vdnext: () => { vdNew(); render(); if (ui.vd.q.kind === 'listen') $('#vdin')?.focus(); },
     vdcheck: () => vdListenCheck(),
     vdsay: x => speak(sayWord(ui.vd.q.it), !!x.slow),
   });

@@ -56,7 +56,7 @@ problem|~ poses a threat to ~|Rising sea levels pose a threat to coastal cities.
 problem|~ is at risk of ~ing|Many species are at risk of becoming extinct.|多くの種が絶滅の危機にある。|at risk of + 動名詞。
 problem|What is worse, ~|What is worse, the problem is getting more serious every year.|さらに悪いことに、問題は年々深刻になっている。|What is more の否定的なバージョン。
 problem|~ is particularly true of ~|This is particularly true of people living in large cities.|これは特に大都市に住む人々に当てはまる。|be true of = 〜に当てはまる。
-opinion|As far as I am concerned, ~|As far as I am concerned, free healthcare is a basic human right.|私に関する限り、無料の医療は基本的人権だ。|In my opinion の言い換え。
+opinion|As far as I am concerned, ~|As far as I am concerned, free healthcare is a basic human right.|私の考えでは、無料の医療は基本的人権だ。|In my opinion の言い換え。
 opinion|I am in favour of ~|I am in favour of banning cars from city centres.|都心から車を締め出すことに賛成だ。|in favour of + 名詞/動名詞（米: favor）。
 opinion|I am opposed to ~|I am opposed to the idea of raising university fees.|大学の授業料を上げる考えに反対だ。|be opposed to + 名詞/動名詞（to は前置詞）。
 opinion|My view is that ~|My view is that schools should focus more on practical skills.|私の考えは、学校はもっと実用的な技能に力を入れるべきだというものだ。|My view is that + 文。

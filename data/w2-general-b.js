@@ -60,7 +60,7 @@ ounce|n|aʊns|オンス・ほんの少し|not an ounce of truth|daily
 pace|n|peɪs|ペース・速さ|the pace of change|acad
 pat|v|pæt|軽くたたく|He patted the dog.|daily
 patch|n|pætʃ|部分・継ぎ当て|a patch of grass|daily
-pinch|v|pɪntʃ|つねる|a pinch of salt|daily
+pinch|v|pɪntʃ|つねる|He pinched my arm to wake me up.|daily
 pit|n|pɪt|穴|a deep pit|daily
 porch|n|pɔːtʃ|玄関・ポーチ|They sat on the porch.|city
 proverb|n|ˈprɒvɜːb|ことわざ|a Japanese proverb|edu
@@ -131,7 +131,7 @@ whip|n|wɪp|むち|a whip and saddle|daily
 wicked|adj|ˈwɪkɪd|邪悪な|a wicked witch|daily
 wit|n|wɪt|機知|a writer of great wit|edu
 worship|v|ˈwɜːʃɪp|崇拝する|a place of worship|soc
-wreck|n|rek|残骸|a ship wreck|travel
+wreck|n|rek|残骸|The wreck was found on the seabed.|travel
 `], ['C1', `
 ore|n|ɔː|鉱石|iron ore|econ
 preach|v|priːtʃ|説教する|Practise what you preach.|soc

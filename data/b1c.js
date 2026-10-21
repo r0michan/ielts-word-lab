@@ -142,7 +142,7 @@ bachelor|n|ˈbætʃələ|学士|a bachelor's degree|edu
 backpack|n|ˈbækpæk|リュック|I travelled with a backpack.|travel
 bargain|n|ˈbɑːɡɪn|お買い得品|It was a real bargain.|econ
 biodiversity|n|ˌbaɪəʊdaɪˈvɜːsəti|生物多様性|Forests are rich in biodiversity.|env
-blank|adj|blæŋk|空白の|Fill in the blanks.|edu
+blank|adj|blæŋk|空白の|Leave this box blank.|edu
 blind|adj|blaɪnd|目の見えない|He is blind.|health
 booking|n|ˈbʊkɪŋ|予約|I made a booking online.|travel
 brochure|n|ˈbrəʊʃə|パンフレット|Take a brochure.|travel

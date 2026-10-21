@@ -355,7 +355,7 @@ stiff|adj|stɪf|こわばった|I have a stiff neck.|health
 sting|v|stɪŋ|刺す|A bee stung me.|env
 stir|v|stɜː|かき混ぜる|Stir the soup.|daily
 stool|n|stuːl|スツール|a bar stool|daily
-storey|n|ˈstɔːri|（建物の）階|a ten-storey building|city
+storey|n|ˈstɔːri|（建物の）階|The hotel is ten storeys high.|city
 stove|n|stəʊv|コンロ・ストーブ|a gas stove|daily
 straw|n|strɔː|わら・ストロー|a plastic straw|env
 stripe|n|straɪp|しま|a shirt with blue stripes|daily

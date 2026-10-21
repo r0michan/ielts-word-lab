@@ -89,7 +89,7 @@ collapse|v|kəˈlæps|崩壊する|The building collapsed.|city
 colonial|adj|kəˈləʊniəl|植民地の|colonial history|gov
 commence|v|kəˈmens|始まる|The course commences in May.|edu
 commentary|n|ˈkɒməntəri|解説|a sports commentary|daily
-commerce|n|ˈkɒmɜːs|商業|e-commerce|econ
+commerce|n|ˈkɒmɜːs|商業|Online commerce has grown rapidly.|econ
 commission|n|kəˈmɪʃən|委員会・手数料|The bank charges a commission.|econ
 commitment|n|kəˈmɪtmənt|献身・約束|a commitment to reducing emissions|env
 commodity|n|kəˈmɒdəti|商品|Oil is a valuable commodity.|econ

@@ -110,7 +110,7 @@ entertainer|n|ˌentəˈteɪnə|芸能人|a famous entertainer|daily
 entrepreneurial|adj|ˌɒntrəprəˈnɜːriəl|起業家の|entrepreneurial spirit|econ
 environmentally|adv|ɪnˌvaɪrənˈmentəli|環境的に|environmentally friendly|env
 epidemic|n|ˌepɪˈdemɪk|流行病|an obesity epidemic|health
-equipped|adj|ɪˈkwɪpt|装備された|well-equipped classrooms|edu
+equipped|adj|ɪˈkwɪpt|装備された|The school is well equipped with computers.|edu
 erode|v|ɪˈrəʊd|浸食する|Trust has been eroded.|soc
 escalate|v|ˈeskəleɪt|段階的に拡大する|The conflict escalated.|gov
 ethnicity|n|eθˈnɪsəti|民族性|people of different ethnicities|soc
@@ -138,7 +138,7 @@ glacier|n|ˈɡlæsiə|氷河|Glaciers are melting.|env
 graffiti|n|ɡrəˈfiːti|落書き|Graffiti is a form of vandalism.|city
 greenery|n|ˈɡriːnəri|緑|more greenery in cities|city
 grievance|n|ˈɡriːvəns|不満|workers' grievances|work
-gross domestic product|n|ˌɡrəʊs dəˌmestɪk ˈprɒdʌkt|国内総生産|GDP grew by 2%.|econ
+gross domestic product|n|ˌɡrəʊs dəˌmestɪk ˈprɒdʌkt|国内総生産|Gross domestic product grew by 2% last year.|econ
 handicraft|n|ˈhændikrɑːft|手工芸|local handicrafts|travel
 harassment|n|ˈhærəsmənt|嫌がらせ|harassment at work|work
 headquarters|n|ˌhedˈkwɔːtəz|本社|The headquarters is in Tokyo.|work
@@ -156,7 +156,7 @@ immature|adj|ˌɪməˈtʃʊə|未熟な|immature behaviour|soc
 immersion|n|ɪˈmɜːʃən|没入|language immersion|edu
 immigrate|v|ˈɪmɪɡreɪt|移住してくる|immigrate to Canada|soc
 immunity|n|ɪˈmjuːnəti|免疫|immunity to disease|health
-impaired|adj|ɪmˈpeəd|損なわれた|hearing-impaired|health
+impaired|adj|ɪmˈpeəd|損なわれた|His hearing was impaired after the accident.|health
 impartial|adj|ɪmˈpɑːʃəl|公平な|impartial advice|acad
 imprisonment|n|ɪmˈprɪzənmənt|投獄|life imprisonment|gov
 inaccurate|adj|ɪnˈækjərət|不正確な|inaccurate information|acad
@@ -196,7 +196,7 @@ lenient|adj|ˈliːniənt|寛大な|lenient sentences|gov
 life expectancy|n|ˈlaɪf ɪkˌspektənsi|平均寿命|Life expectancy has increased.|health
 lifelong|adj|ˈlaɪflɒŋ|生涯の|lifelong learning|edu
 lifespan|n|ˈlaɪfspæn|寿命|the average lifespan|health
-literate|adj|ˈlɪtərət|読み書きのできる|computer-literate|tech
+literate|adj|ˈlɪtərət|読み書きのできる|Most adults in Japan are literate.|tech
 livestock|n|ˈlaɪvstɒk|家畜|livestock farming|env
 loneliness|n|ˈləʊnlinəs|孤独|Loneliness affects health.|soc
 low-income|adj|ˌləʊ ˈɪnkʌm|低所得の|low-income families|econ

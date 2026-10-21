@@ -119,7 +119,7 @@ conflict|n|ˈkɒnflɪkt|対立|There is conflict between the two groups.|soc
 confused|adj|kənˈfjuːzd|混乱した|I'm confused about the question.|edu
 congestion|n|kənˈdʒestʃən|渋滞|Traffic congestion is a major problem.|city
 connection|n|kəˈnekʃən|関係・接続|There's a connection between diet and health.|health
-conscious|adj|ˈkɒnʃəs|意識している|People are more health-conscious now.|health
+conscious|adj|ˈkɒnʃəs|意識している|Many people are now conscious of the need to eat healthily.|health
 consider|v|kənˈsɪdə|考慮する|Consider the advantages and disadvantages.|acad
 consist|v|kənˈsɪst|成り立つ|The course consists of six units.|edu
 construct|v|kənˈstrʌkt|建設する|A new bridge was constructed.|city

@@ -101,7 +101,7 @@ independence|n|ˌɪndɪˈpendəns|独立|financial independence|econ
 index|n|ˈɪndeks|指数|the price index|econ
 indirect|adj|ˌɪndaɪˈrekt|間接的な|indirect effects|acad
 indispensable|adj|ˌɪndɪˈspensəbəl|不可欠な|Smartphones have become indispensable.|tech
-induce|v|ɪnˈdjuːs|誘発する|stress-induced illness|health
+induce|v|ɪnˈdjuːs|誘発する|Stress can induce headaches and sleep problems.|health
 industrial|adj|ɪnˈdʌstriəl|産業の|industrial waste|env
 inequality|n|ˌɪnɪˈkwɒləti|不平等|income inequality|soc
 infant|n|ˈɪnfənt|乳児|infant mortality|health

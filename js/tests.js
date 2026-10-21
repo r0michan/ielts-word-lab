@@ -122,6 +122,10 @@
   const gColl = r => gItem(r, D.COLL, 'コロケーション', 'coll', '空欄に入る最も自然な語は？');
   const gForm = r => gItem(r, D.FORM, '品詞（TOEIC型）', 'form', '空欄に入る正しい形は？');
   function gSpell(r) { const it = pk(r, D.HARD); return mc('つづり', `<div class="small muted">「${esc(it.ja)}」の正しいつづりは？</div>`, it.w, it.wrong, {id: it.id, kind: 'spell', say: it.w, en: true, explain: `正しくは <b>${esc(it.w)}</b>`}); }
+  function gGram(r, L) {
+    const q = window.GRAMMAR_BANK?.level(L, 1, r)[0]; if (!q) return gMean(r, byLv[L]);
+    return mc('文法', `<div class="small muted">${q.lead}</div><div class="vq">${q.prompt}</div>`, q.ans, q.opts.filter(o => o !== q.ans), {en: !q.ja, lv: L, explain: `${q.full ? `<span class="ex" style="font-size:15px">${esc(q.full)}</span>` : ''}<div class="small">${esc(q.why || '')}</div>`});
+  }
   function gNum(r) {
     const it = pk(r, D.IELTS_GEN)();
     return {type: 'type', sec: 'リスニング', prompt: `<div class="small muted"><span class="lv lv-B">${esc(it.kind)}</span> ${esc(it.ask)}</div><div class="row"><button class="btn primary" data-act="ttsay">${ICON.speak}再生</button><button class="btn" data-act="ttsay" data-slow="1">${ICON.slow}ゆっくり</button></div>`,
@@ -130,12 +134,12 @@
 
   // question mix per level (weights per 10 questions)
   const MIX = {
-    A1: {mean: 5, rev: 2, cloze: 2, listen: 1},
-    A2: {mean: 4, rev: 2, cloze: 2, listen: 1, spell: 1},
-    B1: {mean: 3, rev: 2, cloze: 1, listen: 1, coll: 1, form: 1, para: 1},
-    B2: {mean: 2, rev: 2, cloze: 2, listen: 1, coll: 1, form: 1, para: 1},
-    C1: {mean: 3, rev: 2, cloze: 2, listen: 1, para: 2},
-    C2: {mean: 3, rev: 3, cloze: 2, listen: 1, para: 1},
+    A1: {mean: 4, rev: 2, cloze: 1, listen: 1, gram: 2},
+    A2: {mean: 3, rev: 2, cloze: 1, listen: 1, spell: 1, gram: 2},
+    B1: {mean: 2, rev: 1, cloze: 1, listen: 1, coll: 1, form: 1, para: 1, gram: 2},
+    B2: {mean: 2, rev: 1, cloze: 1, listen: 1, coll: 1, form: 1, para: 1, gram: 2},
+    C1: {mean: 2, rev: 2, cloze: 1, listen: 1, para: 2, gram: 2},
+    C2: {mean: 2, rev: 2, cloze: 2, listen: 1, para: 1, gram: 2},
   };
   function mixed(r, L, n, opt = {}) {
     const w = MIX[L], tot = Object.values(w).reduce((a, b) => a + b, 0), plan = [];
@@ -143,7 +147,7 @@
     while (plan.length > n) plan.splice(plan.indexOf('mean'), 1);
     while (plan.length < n) plan.push('mean');
     const words = opt.week ? weekWords(L) : byLv[L];
-    const q = k => k === 'mean' ? gMean(r, words) : k === 'rev' ? gRev(r, words) : k === 'cloze' ? gCloze(r, L) : k === 'listen' ? gListen(r, L) : k === 'coll' ? gColl(r) : k === 'form' ? gForm(r) : k === 'para' ? gPara(r, L) : gSpell(r);
+    const q = k => k === 'mean' ? gMean(r, words) : k === 'rev' ? gRev(r, words) : k === 'cloze' ? gCloze(r, L) : k === 'listen' ? gListen(r, L) : k === 'coll' ? gColl(r) : k === 'form' ? gForm(r) : k === 'para' ? gPara(r, L) : k === 'gram' ? gGram(r, L) : gSpell(r);
     const qs = plan.map(q);
     if (opt.num && LEVELS.indexOf(L) >= 2) qs.splice(-opt.num, opt.num, ...[...Array(opt.num)].map(() => gNum(r)));
     // the same question twice in one test reads as a bug: re-roll duplicates a few times

@@ -97,7 +97,7 @@
     if (r.i >= n) return runResult();
     let body = '', after = '';
     if (q.type === 'mc') {
-      body = `${q.lead ? `<div class="small muted">${q.lead}</div>` : ''}<div class="vq">${q.prompt}</div><div class="opts">${q.opts.map((o, j) => `<button class="opt en ${res ? (o === q.ans ? 'ok' : j === res.pick ? 'ng' : '') : ''}" data-act="crpick" data-i="${j}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
+      body = `${q.lead ? `<div class="small muted">${q.lead}</div>` : ''}<div class="vq">${q.prompt}</div><div class="opts">${q.opts.map((o, j) => `<button class="opt ${q.ja ? '' : 'en'} ${res ? (o === q.ans ? 'ok' : j === res.pick ? 'ng' : '') : ''}" data-act="crpick" data-i="${j}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
       if (res) after = `<div class="verdict ${res.ok ? 'up' : 'dn'}">${res.ok ? '正解！' : '不正解'}</div><div class="small">${q.why ? esc(q.why) : ''}</div>${q.full ? `<div class="row"><span class="ex" style="font-size:16px">${esc(q.full)}</span>${sayBtn(q.full, '聞く')}</div>` : ''}`;
     } else if (q.type === 'write') {
       body = `<div class="small muted">日本語の意味になるように英語で書いてください${q.hint ? `（${esc(q.hint)}）` : ''}</div><div class="vq" style="font-family:var(--f-ui);font-weight:800">${esc(q.ja)}</div>
@@ -141,7 +141,7 @@
   /* ---------- question builders ---------- */
   const mcFrom = (g, [s, a, wr, why], tag) => ({type: 'mc', tag, prompt: esc(s).replace('___', '<b>＿＿＿</b>'), opts: shuffle([a, ...wr.split(',').map(x => x.trim())]), ans: a, why, full: s.replace('___', a)});
   const wFrom = (g, [ja, model, alts], tag) => ({type: 'write', tag, ja, model, alts: (alts || '').split('|').map(x => x.trim()).filter(Boolean), hint: g ? g.title.replace(/（.*?）/g, '') + ' を使って' : ''});
-  const unitQs = g => [...g.q.map(x => mcFrom(g, x)), ...g.w.map(x => wFrom(g, x))];
+  const unitQs = g => window.GRAMMAR_BANK ? GRAMMAR_BANK.unit(g, 10) : [...g.q.map(x => mcFrom(g, x)), ...g.w.map(x => wFrom(g, x))];
   const byLv = L => G.filter(g => g.lv === L);
   const single = w => !/\s/.test(w.w) && ['n', 'v', 'adj', 'adv'].includes(w.pos) && w.ja;
   const exOk = w => w.ex && /[.!?]$/.test(w.ex.trim()) && w.ex.split(/\s+/).length >= 4 && w.ex.split(/\s+/).length <= 12 && new RegExp(`\\b${w.w}\\b`, 'i').test(w.ex);
@@ -170,7 +170,7 @@
     return `<div class="row" style="justify-content:space-between"><b>${L} の文法（${us.length}ユニット）</b><span class="small muted">合格 ${done} / ${us.length}</span></div>
       <div class="ubar"><i style="width:${us.length ? done / us.length * 100 : 0}%"></i></div>
       <div class="ulist">${us.map((g, i) => { const b = S.course[g.id]?.best; return `<button class="ucard ${b >= 80 ? 'done' : ''}" data-act="csunit" data-id="${g.id}"><span class="no">${b >= 80 ? '✓' : i + 1}</span><span><b>${esc(g.title)}</b><span class="sub">${esc(g.core)}</span><span class="sub" style="display:block;margin-top:4px"><span class="lv lv-${L[0]}">${esc(g.school)}で習う</span>${b != null ? ` ・ ベスト ${b}点` : ''}</span></span></button>`; }).join('')}</div>
-      <p class="note">1ユニット＝「ひとことで」→「しくみ」→「形」→「例文」→「日本人がやりがちなミス」→「練習（選択3問＋記述2問）」。80点で合格です。学校で習う時期と、実際に使いこなせる CEFR レベルは違います（例：現在完了は中3で習いますが、使いこなせるのは B1）。</p>`;
+      <p class="note">1ユニット＝「ひとことで」→「しくみ」→「形」→「例文」→「日本人がやりがちなミス」→「練習（10問：穴埋め・正誤判定・誤文訂正・並べ替え・意味・聞き取り・記述。毎回ちがう問題が出ます）」。80点で合格です。学校で習う時期と、実際に使いこなせる CEFR レベルは違います（例：現在完了は中3で習いますが、使いこなせるのは B1）。</p>`;
   }
   function unitView() {
     const g = G.find(x => x.id === ui.cs.unit), us = byLv(g.lv), idx = us.indexOf(g), nx = us[idx + 1];
@@ -182,7 +182,7 @@
       <div class="panel" style="gap:6px"><b>形</b><table class="gtab">${g.form.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('')}</table></div>
       <div class="panel" style="gap:8px"><b>例文（タップで発音）</b><div class="gex">${g.ex.map(([en, ja]) => `<div><button class="btn ghost" style="padding:2px" data-act="say" data-text="${esc(en)}" aria-label="発音">${ICON.speak}</button><span class="t"><span class="ex" style="font-size:16.5px">${esc(en)}</span><span class="ja">${esc(ja)}</span></span></div>`).join('')}</div></div>
       <div class="panel" style="gap:8px"><b>日本人がやりがちなミス</b><div class="trapc">${g.trap.map(([x, o, why]) => `<div><span class="x">${esc(x.replace(/^×\s*/, ''))}</span><span class="o">→ ${esc(o.replace(/^○\s*/, ''))}</span><span class="why">${esc(why)}</span></div>`).join('')}</div></div>
-      <div class="row"><button class="btn primary big" data-act="cspractice">練習する（5問）</button>${nx ? `<button class="btn" data-act="csunit" data-id="${nx.id}">次のユニットへ</button>` : ''}<button class="btn ghost" data-act="csback">一覧へ</button></div>
+      <div class="row"><button class="btn primary big" data-act="cspractice">練習する（10問・毎回ちがう問題）</button>${nx ? `<button class="btn" data-act="csunit" data-id="${nx.id}">次のユニットへ</button>` : ''}<button class="btn ghost" data-act="csback">一覧へ</button></div>
     </div>`;
   }
   const SIZE = 50;
@@ -238,7 +238,7 @@
     cspractice: () => { const g = G.find(x => x.id === ui.cs.unit); startRun(`${g.title} の練習`, unitQs(g), p => { const c = S.course[g.id] || {}; S.course[g.id] = {best: Math.max(c.best || 0, p), at: Date.now()}; save(); }); },
     cspart: x => {
       const L = curLv(), gs = byLv(L); let qs = [];
-      if (x.k === 'grammar') { qs = shuffle(gs.flatMap(g => g.q.map(q => mcFrom(g, q, g.title)))).slice(0, 10); if (['B1', 'B2'].includes(L) && window.DRILL) qs = shuffle([...qs.slice(0, 7), ...shuffle(DRILL.FORM).slice(0, 3).map(f => mcFrom(null, [f.q, f.a, f.wrong.join(','), f.tip], '品詞（TOEIC型）'))]); }
+      if (x.k === 'grammar') { qs = window.GRAMMAR_BANK ? GRAMMAR_BANK.level(L, 10) : shuffle(gs.flatMap(g => g.q.map(q => mcFrom(g, q, g.title)))).slice(0, 10); if (['B1', 'B2'].includes(L) && window.DRILL) qs = shuffle([...qs.slice(0, 7), ...shuffle(DRILL.FORM).slice(0, 3).map(f => mcFrom(null, [f.q, f.a, f.wrong.join(','), f.tip], '品詞（TOEIC型）'))]); }
       if (x.k === 'short') qs = [...Array(4)].map(() => clozeQ(L)).concat([...Array(4)].map(() => orderQ(L))).filter(Boolean);
       if (x.k === 'write') qs = shuffle(gs.flatMap(g => g.w.map(w => wFrom(g, w, g.title)))).slice(0, 5);
       if (!qs.length) return;

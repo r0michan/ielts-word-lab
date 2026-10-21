@@ -77,6 +77,9 @@ select,input[type=text],input[type=search],input[type=password],textarea{backgro
 .tabs{display:flex;gap:2px;min-width:max-content}
 .tab{border:0;background:none;padding:10px 13px;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.modeseg{display:inline-flex;align-self:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-right:8px;flex:none}
+.modeseg button{border:0;background:var(--surface);padding:6px 14px;cursor:pointer;font-weight:700;font-size:13px;color:var(--muted)}
+.modeseg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 .tab .new{font-size:10px;color:var(--accent);margin-left:3px;vertical-align:top}
 
 /* generic */
@@ -309,6 +312,7 @@ textarea{width:100%;min-height:130px;font-family:var(--f-word);font-size:14px}
 <script src="data/listening2.js"></script>
 <script src="data/japan.js"></script>
 <script src="data/more-practice.js"></script>
+<script src="data/lessons.js"></script>
 <script>
 const LEVELS = ['A1','A2','B1','B2','C1','C2'];
 const LEVEL_INFO = {
@@ -563,7 +567,7 @@ function renderBand() {
 const NO_FILTER = ['write', 'speak', 'settings'];
 function renderFilters() {
   const el = $('#filters');
-  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
+  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
   if (el.hidden) return;
   const n = filtered().length;
   el.innerHTML = `
@@ -574,9 +578,14 @@ function renderFilters() {
 }
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
-const TABS = [['home','ホーム'],['notes','間違いノート',1],['mock','模擬試験',1],['card','単語カード'],['quiz','クイズ'],['sent','文トレ'],['read','読解'],['listen','リスニング'],['expr','表現・イディオム'],['japan','日本人の弱点'],['write','ライティング'],['pron','発音練習'],['speak','スピーキング'],['list','単語帳'],['score','国別スコア'],['settings','設定・追加']];
+// [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',1,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+  ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','国別スコア',0,'exam'],
+  ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 function renderTabs() {
-  $('#tabs').innerHTML = TABS.map(([k, v, nw]) => `<button class="tab" role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${v}${nw ? '<span class="new">NEW</span>' : ''}</button>`).join('');
+  const mode = S.mode || 'learn';
+  const modeSeg = `<div class="modeseg" role="group" aria-label="モード"><button data-act="setmode" data-m="learn" aria-pressed="${mode === 'learn'}">学ぶ</button><button data-act="setmode" data-m="exam" aria-pressed="${mode === 'exam'}">試験対策</button></div>`;
+  $('#tabs').innerHTML = modeSeg + TABS.filter(t => t[3] === 'both' || t[3] === mode || t[0] === S.tab).map(([k, v, nw]) => `<button class="tab" role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${v}${nw ? '<span class="new">NEW</span>' : ''}</button>`).join('');
 }
 function render() {
   renderFilters(); renderTabs();
@@ -1360,6 +1369,7 @@ function importWords() {
 /* ---------- events ---------- */
 function setWText(v) { S.wtext[wKey()] = v; saveSoon(); updateWStat(); }
 const ACT = {
+  setmode: d => { S.mode = d.m; const first = TABS.find(t => t[3] === d.m); if (first) S.tab = first[0]; save(); render(); },
   tab: d => { if (S.tab === 'speak' && d.tab !== 'speak') spkReset(); if (ui.pron.busy) ui.pron.rec?.abort(); if (ui.sent.busy) ui.sent.rec?.abort(); S.tab = d.tab; ui.confirm = null; save(); render(); },
   lv: d => { const i = S.levels.indexOf(d.lv); if (i >= 0) { if (S.levels.length > 1) S.levels.splice(i, 1); } else S.levels.push(d.lv); ui.cram = false; ui.quiz = null; ui.sent.item = null; save(); render(); },
   preset: d => { S.levels = d.p === 'all' ? [...LEVELS] : ['B1', 'B2', 'C1']; ui.cram = false; ui.quiz = null; ui.sent.item = null; save(); render(); },
@@ -1506,5 +1516,6 @@ render();
 <script src="js/mouth.js"></script>
 <script src="js/notes.js"></script>
 <script src="js/mock.js"></script>
+<script src="js/lessons.js"></script>
 </body>
 </html>

@@ -2,21 +2,21 @@
    Each entry: a drawing, the core meaning, and examples that go from concrete to abstract. */
 (() => {
   const css = `
-  :root{--im-lm:#E7ECEA;--im-lms:#8A9994;--im-tr:#E2783A;--im-ar:#0D7461;--im-hi:#4C5FC4;--im-tx:#5A6A65}
-  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--im-lm:#24312D;--im-lms:#7E908A;--im-tr:#F0905A;--im-ar:#3FBF9F;--im-hi:#8F9EF0;--im-tx:#9AAAA5}}
-  :root[data-theme="dark"]{--im-lm:#24312D;--im-lms:#7E908A;--im-tr:#F0905A;--im-ar:#3FBF9F;--im-hi:#8F9EF0;--im-tx:#9AAAA5}
+  :root{--im-lm:#FFF0E6;--im-lms:#BBA89E;--im-tr:#FF8576;--im-ar:#2FAE93;--im-hi:#7D8CF2;--im-tx:#7A6860;--im-skin:#FFE3CF;--im-face:#4A3838;--im-blush:#FF9EAE}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--im-lm:#3A2F35;--im-lms:#A89890;--im-tr:#FF9A8C;--im-ar:#5ED6B9;--im-hi:#A0ACFF;--im-tx:#D3C3BB;--im-skin:#FFE3CF;--im-face:#4A3838;--im-blush:#FF9EAE}}
+  :root[data-theme="dark"]{--im-lm:#3A2F35;--im-lms:#A89890;--im-tr:#FF9A8C;--im-ar:#5ED6B9;--im-hi:#A0ACFF;--im-tx:#D3C3BB;--im-skin:#FFE3CF;--im-face:#4A3838;--im-blush:#FF9EAE}
   .imgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-  .imcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;min-width:0}
-  .imcard:hover{border-color:var(--accent)}
+  .imcard{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;min-width:0}
+  .imcard:hover{border-color:var(--accent);transform:translateY(-3px) rotate(-.4deg)}
   .imcard .w{font-family:var(--f-word);font-size:24px;font-weight:700;line-height:1.1}
   .imcard .core{font-weight:700;font-size:14px;color:var(--accent)}
-  .imsvg{background:var(--sunk);border-radius:10px;padding:4px}
+  .imsvg{background:linear-gradient(180deg,var(--sky) 0%,var(--sunk) 100%);border-radius:16px;padding:4px}
   .imsvg svg{display:block;width:100%;height:auto}
-  .imsvg text{font:10.5px var(--f-ui);fill:var(--im-tx)}
+  .imsvg text{font:700 10.5px var(--f-ui);fill:var(--im-tx)}
   .imdetail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
   @media (max-width:700px){.imdetail{grid-template-columns:minmax(0,1fr)}}
   .imsteps{display:flex;flex-direction:column;gap:8px;counter-reset:st}
-  .imsteps div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;background:var(--sunk);border-radius:10px;padding:10px 12px}
+  .imsteps div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;background:var(--sunk);border-radius:16px;padding:10px 12px}
   .imsteps .lvl{font-size:11px;font-weight:700;color:var(--accent);grid-column:1 / -1}
   .imsteps .ex{font-size:16.5px}
   .imsteps .jp{grid-column:2;font-size:13px;color:var(--muted)}
@@ -43,20 +43,26 @@
 
   /* ---------- people & scene helpers (pictogram style; feet on the ground at y) ---------- */
   const G = 108;
+  // chibi pictogram: skin-coloured round head with hair cap, dot eyes, blush and a smile
   const fig = (x, y = G, o = {}) => {
     const c = o.c || 'var(--im-tr)', s = o.s || 1, f = o.flip ? -1 : 1, p = o.p || 'stand';
-    const L = (a, b, cc, d) => `<line x1="${a}" y1="${b}" x2="${cc}" y2="${d}" stroke="${c}" stroke-width="4.5" stroke-linecap="round"/>`;
+    const L = (a, b, cc, d) => `<line x1="${a}" y1="${b}" x2="${cc}" y2="${d}" stroke="${c}" stroke-width="5" stroke-linecap="round"/>`;
     const pose = {
-      stand: L(-3, -12, -4, 0) + L(3, -12, 4, 0) + L(-6, -27, -11, -15) + L(6, -27, 11, -15),
-      walk: L(-3, -12, -10, 0) + L(3, -12, 9, 0) + L(-6, -27, -12, -18) + L(6, -27, 13, -21),
-      jump: L(-3, -12, -11, -3) + L(3, -12, 11, -6) + L(-6, -27, -14, -38) + L(6, -27, 14, -38),
-      wave: L(-3, -12, -4, 0) + L(3, -12, 4, 0) + L(-6, -27, -11, -15) + L(6, -27, 12, -42),
-      sit: L(-3, -12, 9, -12) + L(9, -12, 9, 0) + L(-6, -27, -10, -16) + L(6, -27, 13, -19),
-      lean: L(-3, -12, -6, 0) + L(3, -12, 0, 0) + L(-6, -27, -11, -16) + L(6, -27, 14, -24),
-      carry: L(-3, -12, -9, 0) + L(3, -12, 9, 0) + L(-6, -27, 12, -24) + L(6, -27, 14, -24),
-      give: L(-3, -12, -4, 0) + L(3, -12, 4, 0) + L(-6, -27, -11, -15) + L(6, -27, 18, -27),
+      stand: L(-3, -10, -4, -1) + L(3, -10, 4, -1) + L(-7, -21, -12, -12) + L(7, -21, 12, -12),
+      walk: L(-3, -10, -9, -1) + L(3, -10, 8, -1) + L(-7, -21, -13, -14) + L(7, -21, 14, -17),
+      jump: L(-3, -10, -10, -3) + L(3, -10, 10, -5) + L(-7, -21, -15, -32) + L(7, -21, 15, -32),
+      wave: L(-3, -10, -4, -1) + L(3, -10, 4, -1) + L(-7, -21, -12, -12) + L(7, -21, 14, -36),
+      sit: L(-3, -10, 8, -10) + L(8, -10, 8, -1) + L(-7, -21, -11, -13) + L(7, -21, 13, -15),
+      lean: L(-3, -10, -6, -1) + L(3, -10, 0, -1) + L(-7, -21, -12, -13) + L(7, -21, 15, -20),
+      carry: L(-3, -10, -8, -1) + L(3, -10, 8, -1) + L(-7, -21, 12, -19) + L(7, -21, 15, -19),
+      give: L(-3, -10, -4, -1) + L(3, -10, 4, -1) + L(-7, -21, -12, -12) + L(7, -21, 19, -22),
     }[p];
-    return `<g transform="translate(${x} ${y})${o.rot ? ` rotate(${o.rot})` : ''} scale(${f * s} ${s})"><circle cx="0" cy="-38" r="7" fill="${c}"/><rect x="-7" y="-30" width="14" height="19" rx="6" fill="${c}"/>${pose}</g>`;
+    const face = `<circle cx="0" cy="-35" r="11.5" fill="var(--im-skin)" stroke="${c}" stroke-width="1.5"/>`
+      + `<path d="M-11.5 -36 A11.5 11.5 0 0 1 11.5 -36 Q8 -40 4 -38 Q0 -42 -4 -38 Q-8 -40 -11.5 -36Z" fill="${c}"/>`
+      + `<circle cx="-4" cy="-34" r="1.6" fill="var(--im-face)"/><circle cx="4" cy="-34" r="1.6" fill="var(--im-face)"/>`
+      + `<circle cx="-7" cy="-30.5" r="2.2" fill="var(--im-blush)" opacity=".7"/><circle cx="7" cy="-30.5" r="2.2" fill="var(--im-blush)" opacity=".7"/>`
+      + `<path d="M-2.4 -30.5 Q0 -28 2.4 -30.5" fill="none" stroke="var(--im-face)" stroke-width="1.3" stroke-linecap="round"/>`;
+    return `<g transform="translate(${x} ${y})${o.rot ? ` rotate(${o.rot})` : ''} scale(${f * s} ${s})">${pose}<rect x="-8" y="-25" width="16" height="17" rx="7" fill="${c}"/>${face}</g>`;
   };
   const grey = 'var(--im-lms)', blue = 'var(--im-hi)';
   const ground = (y = G, x1 = 6, x2 = 194) => ln(x1, y, x2, y, 'var(--im-lms)', 2);

@@ -3,8 +3,8 @@
  "short_name": "英語ラボ",
  "start_url": "./",
  "display": "standalone",
- "background_color": "#F2F5F4",
- "theme_color": "#0D7461",
+ "background_color": "#FFF8F2",
+ "theme_color": "#D9506A",
  "lang": "ja",
  "icons": [
   {

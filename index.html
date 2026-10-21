@@ -5,35 +5,37 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IELTS単語ラボ</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0D7461">
+<meta name="theme-color" content="#D9506A">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400&family=Nunito:wght@600;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
 <style>
 /* Layout: one centred study column — CEFR band map on top, filters, tab rail, then the active workspace. */
 :root{
-  --bg:#F2F5F4; --surface:#FFFFFF; --sunk:#E8EEEC; --ink:#14201C; --muted:#5A6A65; --line:#D6DFDC;
-  --accent:#0D7461; --accent-soft:#D9EEE8; --on-accent:#FFFFFF;
-  --good:#1C7A3E; --good-soft:#DDF1E3; --bad:#B42318; --bad-soft:#FBE3E0; --warn:#A15C07; --warn-soft:#FBEBD3;
-  --lvA:#3D7A36; --lvB:#2A5C9A; --lvC:#7A3B76;
-  --c1:#0D7461; --c2:#C2571A; --c3:#4C5FC4;
-  --f-word:"Charis SIL","Charis","Georgia","Times New Roman",serif;
-  --f-ui:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;
-  --r:10px;
+  --bg:#FFF8F2; --surface:#FFFFFF; --sunk:#FFF1E7; --ink:#3D2E2E; --muted:#8B7770; --line:#F2DDD0;
+  --accent:#D9506A; --accent-soft:#FFE3E8; --on-accent:#FFFFFF;
+  --good:#2E9E6E; --good-soft:#DDF6EA; --bad:#D9483B; --bad-soft:#FFE4E0; --warn:#B86E0E; --warn-soft:#FFF0D6;
+  --lvA:#3E9A4E; --lvB:#4A72C9; --lvC:#A2559C;
+  --c1:#D9506A; --c2:#F08A3C; --c3:#6F7FE8;
+  --sky:#EAF6FF; --shadow:0 3px 0 rgba(217,80,106,.07),0 8px 22px rgba(120,70,60,.07);
+  --f-word:"Nunito","Zen Maru Gothic",system-ui,sans-serif;
+  --f-ipa:"Charis SIL","Charis","Georgia",serif;
+  --f-ui:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  --r:18px;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F1614; --surface:#17211E; --sunk:#1F2B27; --ink:#E4ECE9; --muted:#9AAAA5; --line:#2C3A36;
-  --accent:#3FBF9F; --accent-soft:#183B33; --on-accent:#06231C;
-  --good:#5CCB83; --good-soft:#173826; --bad:#F2877C; --bad-soft:#3C1E1B; --warn:#E3A048; --warn-soft:#3A2A14;
-  --lvA:#86C67E; --lvB:#7FAFEA; --lvC:#D597D0;
-  --c1:#3FBF9F; --c2:#F0905A; --c3:#8F9EF0; color-scheme:dark;}}
+  --bg:#1E1A22; --surface:#2A2430; --sunk:#332B3A; --ink:#F5EAE6; --muted:#BBA9A8; --line:#43384A;
+  --accent:#FF8FA3; --accent-soft:#4A2A36; --on-accent:#2A0F17;
+  --good:#6FD6A0; --good-soft:#1F3A2E; --bad:#FF8B80; --bad-soft:#47231F; --warn:#F2B860; --warn-soft:#44341A;
+  --lvA:#8FD68A; --lvB:#9DB8FF; --lvC:#E2A4DC;
+  --c1:#FF8FA3; --c2:#FFB07A; --c3:#A0ACFF; --sky:#2C2A3C; --shadow:0 3px 0 rgba(0,0,0,.25); color-scheme:dark;}}
 :root[data-theme="dark"]{
-  --bg:#0F1614; --surface:#17211E; --sunk:#1F2B27; --ink:#E4ECE9; --muted:#9AAAA5; --line:#2C3A36;
-  --accent:#3FBF9F; --accent-soft:#183B33; --on-accent:#06231C;
-  --good:#5CCB83; --good-soft:#173826; --bad:#F2877C; --bad-soft:#3C1E1B; --warn:#E3A048; --warn-soft:#3A2A14;
-  --lvA:#86C67E; --lvB:#7FAFEA; --lvC:#D597D0;
-  --c1:#3FBF9F; --c2:#F0905A; --c3:#8F9EF0; color-scheme:dark;}
+  --bg:#1E1A22; --surface:#2A2430; --sunk:#332B3A; --ink:#F5EAE6; --muted:#BBA9A8; --line:#43384A;
+  --accent:#FF8FA3; --accent-soft:#4A2A36; --on-accent:#2A0F17;
+  --good:#6FD6A0; --good-soft:#1F3A2E; --bad:#FF8B80; --bad-soft:#47231F; --warn:#F2B860; --warn-soft:#44341A;
+  --lvA:#8FD68A; --lvB:#9DB8FF; --lvC:#E2A4DC;
+  --c1:#FF8FA3; --c2:#FFB07A; --c3:#A0ACFF; --sky:#2C2A3C; --shadow:0 3px 0 rgba(0,0,0,.25); color-scheme:dark;}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -267,12 +269,46 @@ textarea{width:100%;min-height:130px;font-family:var(--f-word);font-size:14px}
 .support span{font-size:13px;border-radius:6px;padding:3px 9px;background:var(--sunk)}
 .support .y{color:var(--good)} .support .n{color:var(--bad)}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bad-soft);border-radius:9px;padding:10px 12px;font-size:14px}
+
+/* ---- cute layer: rounded, soft, bouncy ---- */
+body{background-color:var(--bg);background-image:radial-gradient(var(--line) 1.1px,transparent 1.5px);background-size:24px 24px;font-weight:500}
+.top h1{display:flex;align-items:center;gap:8px;font-weight:900;letter-spacing:.03em}
+.top h1 span{font-family:var(--f-word);font-weight:800}
+.mascot{width:40px;height:40px;flex:none;transform-origin:50% 90%}
+.top h1:hover .mascot{animation:wobble .6s ease-in-out}
+@keyframes wobble{25%{transform:rotate(-10deg)}75%{transform:rotate(8deg)}}
+.ipa{font-family:var(--f-ipa)}
+.hw{font-weight:800}
+.bandmap{border-width:1.5px;border-radius:22px;box-shadow:var(--shadow)}
+.sheet{border-width:1.5px;border-radius:24px;box-shadow:var(--shadow)}
+.btn{border-radius:999px;border-width:1.5px;font-weight:700;transition:transform .12s ease,box-shadow .12s ease,background .12s}
+.btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.97)}
+.btn.primary{box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 65%,#000)}
+.btn.primary:active{box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 65%,#000)}
+.btn.ghost:hover{transform:none}
+.chip{border-width:1.5px;font-weight:700}
+.chip[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.seg{border-radius:999px;border-width:1.5px}
+.tabrail{border-bottom:0;padding-bottom:2px}
+.tabs{gap:4px;padding:4px 2px}
+.tab{border:0;border-radius:999px;padding:8px 14px;margin:0;font-weight:700;transition:background .15s,color .15s}
+.tab:hover{background:var(--sunk);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
+.tab .new{background:var(--accent);color:var(--on-accent);border-radius:999px;padding:0 5px;font-size:9px;font-weight:900}
+.modeseg{border-width:1.5px}
+select,input[type=text],input[type=search],input[type=password],textarea{border-radius:14px;border-width:1.5px}
+.lv,.tag{border-radius:999px}
+.meter{height:10px}
+.meter i{background:linear-gradient(90deg,var(--accent),var(--c2))}
+.note{border-left:0;background:var(--sunk);border-radius:14px;padding:8px 12px}
+@media (prefers-reduced-motion:reduce){.btn,.tab{transition:none}.btn:hover,.btn:active{transform:none}.top h1:hover .mascot{animation:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>IELTS単語ラボ <span>A1–C2</span></h1>
+    <h1><svg class="mascot" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="22" r="14" fill="#FFE3CF" stroke="#FF8576" stroke-width="2"/><path d="M6 21A14 14 0 0 1 34 21Q29 16 24 18Q20 13 16 18Q11 16 6 21Z" fill="#FF8576"/><path d="M8 9L20 4L32 9L20 14Z" fill="#4A3838"/><path d="M30 9.5V16" stroke="#4A3838" stroke-width="1.5"/><circle cx="30" cy="17" r="1.8" fill="#F2B860"/><circle cx="15" cy="24" r="1.9" fill="#4A3838"/><circle cx="25" cy="24" r="1.9" fill="#4A3838"/><circle cx="11" cy="28" r="2.6" fill="#FF9EAE" opacity=".7"/><circle cx="29" cy="28" r="2.6" fill="#FF9EAE" opacity=".7"/><path d="M17 29Q20 32 23 29" fill="none" stroke="#4A3838" stroke-width="1.6" stroke-linecap="round"/></svg>IELTS単語ラボ <span>A1–C2</span></h1>
     <span class="muted small">目標: IELTS 6.5（CEFR B2〜C1）</span>
   </header>
   <section class="bandmap" id="bandmap" aria-label="CEFR・ケンブリッジ英検・IELTSの対応"></section>

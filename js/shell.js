@@ -20,6 +20,7 @@
     sent: I('<path d="M4 6h16M4 10h10M4 14h16M4 18h8"/>'),
     expr: I('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'),
     japan: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/>'),
+    situ: I('<path d="M14 9a2 2 0 0 1-2 2H6l-3 3V4a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2z"/><path d="M18 9h1a2 2 0 0 1 2 2v10l-3-3h-6a2 2 0 0 1-2-2v-1"/>'),
     dict: I('<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="14" width="5" height="7" rx="2"/><rect x="17" y="14" width="5" height="7" rx="2"/>'),
     pron: I('<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>'),
     mock: I('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>'),
@@ -41,7 +42,7 @@
       ['レベル別コース', [['course', 'レベル別コース（A1〜C2）', '文法ユニット・単語帳・パート別練習。中学〜大学・英検・TOEIC の目安つき']]],
       ['単語', [['card', '単語カード', '忘れる前に出題する間隔反復'], ['quiz', 'クイズ', '4択・書き取りで定着を確認'], ['vocab', '語彙ドリル', '言い換え・コロケーション・品詞・つづり・トピック'], ['images', 'イメージ図鑑', '前置詞・時制・冠詞を図で理解'], ['list', '単語帳', '5,000語の検索と進み具合']]],
       ['文法・表現', [['lessons', 'レッスン', '文法と表現を順番に学ぶ'], ['sent', '文トレ', '構文の並べ替え・穴埋め・音読'], ['expr', '表現・イディオム', '国ごとの言い方・会話表現・スラング'], ['japan', '日本人の弱点', 'L/R・和製英語・間違えやすい文']]],
-      ['聞く・話す', [['dict', 'ディクテーション', '聞いて書き取る・数字とつづり'], ['pron', '発音練習', '口の形の図と録音で確認']]],
+      ['聞く・話す', [['situ', 'シチュエーション会話', '旅行・海外生活・仕事の33場面をロールプレイで'], ['dict', 'ディクテーション', '聞いて書き取る・数字とつづり'], ['pron', '発音練習', '口の形の図と録音で確認']]],
     ]},
     exam: {title: '試験対策', lead: 'IELTS の4技能を本番形式で練習する', groups: [
       ['本番形式', [['mock', '模擬試験', '4技能を時間を計って通しで']]],
@@ -148,7 +149,7 @@
   Object.assign(ACT, {
     tab: d => { const changed = d.tab !== S.tab; baseTab(d); if (changed) scrollTo(0, 0); },
     shellgo: d => ACT.tab({tab: {home: 'home', tests: 'tests', learn: 'hub-learn', exam: 'hub-exam', record: 'hub-record'}[d.d]}),
-    shellback: () => ACT.tab({tab: {learn: 'hub-learn', exam: 'hub-exam', record: 'hub-record', tests: 'tests', home: 'home'}[destOf(S.tab)]}),
+    shellback: () => (window.BACK_HANDLERS || []).some(f => f()) ? (render(), scrollTo(0, 0)) : ACT.tab({tab: {learn: 'hub-learn', exam: 'hub-exam', record: 'hub-record', tests: 'tests', home: 'home'}[destOf(S.tab)]}),
     fopen: () => { ui.fopen = !ui.fopen; render(); },
   });
   render();

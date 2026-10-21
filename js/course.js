@@ -272,4 +272,5 @@
     else if (q?.type === 'mc' && /^[1-4]$/.test(e.key) && !r.res[r.i]) ACT.crpick({i: +e.key - 1});
   });
   window.EXTRA_VIEWS = {...window.EXTRA_VIEWS, course: vCourse};
+  (window.BACK_HANDLERS = window.BACK_HANDLERS || []).push(() => { if (S.tab !== 'course') return false; if (ui.cs.run) ui.cs.run = null; else if (ui.cs.unit) ui.cs.unit = null; else if (ui.cs.wunit != null) ui.cs.wunit = null; else return false; return true; });
 })();

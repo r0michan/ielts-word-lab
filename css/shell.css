@@ -77,7 +77,7 @@ html.shell .filters{display:block}
 .tile em.hot{background:var(--accent);color:var(--on-accent)}
 .tile .chev svg,.morelink svg{width:18px;height:18px;color:var(--muted)}
 .ic-lessons,.ic-sent,.ic-expr,.ic-japan{background:color-mix(in srgb,var(--c3) 14%,transparent);color:var(--c3)}
-.ic-dict,.ic-pron{background:var(--good-soft);color:var(--good)}
+.ic-situ,.ic-dict,.ic-pron{background:var(--good-soft);color:var(--good)}
 .ic-mock,.ic-read,.ic-listen,.ic-write,.ic-speak,.ic-score{background:color-mix(in srgb,var(--c2) 16%,transparent);color:var(--c2)}
 .ic-notes,.ic-settings{background:var(--sunk);color:var(--muted)}
 

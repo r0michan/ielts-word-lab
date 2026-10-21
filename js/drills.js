@@ -36,6 +36,8 @@
   const COLL = rows(window.COLLOC_RAW).map(([q, a, wr, tip]) => ({id: 'co:' + q, q, a, wrong: list(wr), tip}));
   const UKUS = rows(window.SPELL_UKUS_RAW).map(([uk, us, ja, rule]) => ({id: 'uk:' + uk, uk, us, ja, rule}));
   const HARD = rows(window.SPELL_HARD_RAW).map(([w, wr, ja]) => ({id: 'hd:' + w, w, wrong: list(wr), ja}));
+  const FORM = rows(window.FORM_RAW).map(([q, a, wr, tip]) => ({id: 'fm:' + q, q, a, wrong: list(wr), tip}));
+  const TOPIC = rows(window.TOPIC_RAW).map(([k, name, tag, ph, task]) => ({k, name, tag, task, ph: ph.split(';').map(x => { const [en, ja] = x.split('='); return {id: 'tp:' + en, en: en.trim(), ja: (ja || '').trim()}; })}));
   window.PARA = PARA;
 
   S.drill = S.drill || {};
@@ -147,13 +149,15 @@
     dcnext: () => { dcNew(); render(); $('#dcin')?.focus(); setTimeout(() => play(false), 250); },
   });
 
+  window.DRILL = {PARA, COLL, UKUS, HARD, FORM, TOPIC, IELTS_GEN, tally};
+
   /* =====================================================================
      語彙ドリル：言い換え・コロケーション・つづり
      ===================================================================== */
-  ui.vd = {mode: 'para', sub: 'hard', q: null, list: false, missOnly: false, s: {c: 0, n: 0}};
+  ui.vd = {mode: 'para', sub: 'hard', q: null, list: false, missOnly: false, s: {c: 0, n: 0}, topic: 'env', tquiz: false};
   const highlight = (ex, w) => { const m = ex.match(new RegExp('\\b' + reEsc(w) + '\\w*', 'i')); return m ? esc(ex.slice(0, m.index)) + `<b>${esc(m[0])}</b>` + esc(ex.slice(m.index + m[0].length)) : esc(ex); };
   function vdPool() {
-    const v = ui.vd, base = v.mode === 'para' ? PARA : v.mode === 'coll' ? COLL : v.sub === 'ukus' ? UKUS : v.sub === 'hard' ? HARD : [...HARD, ...UKUS];
+    const v = ui.vd, base = v.mode === 'para' ? PARA : v.mode === 'coll' ? COLL : v.mode === 'form' ? FORM : v.mode === 'topic' ? (TOPIC.find(t => t.k === v.topic) || TOPIC[0]).ph : v.sub === 'ukus' ? UKUS : v.sub === 'hard' ? HARD : [...HARD, ...UKUS];
     if (!v.missOnly) return base;
     const m = base.filter(x => S.drill.miss[x.id] || S.drill.miss['ls:' + x.id]); return m.length ? m : base;
   }
@@ -163,6 +167,8 @@
       const ans = pick(it.syn), others = shuffle([...new Set(PARA.filter(g => g.c !== it.c).flatMap(g => g.syn))].filter(x => !it.syn.includes(x))).slice(0, 3);
       v.q = {it, kind: 'para', opts: shuffle([ans, ...others]), ans, pick: null};
     } else if (v.mode === 'coll') v.q = {it, kind: 'coll', opts: shuffle([it.a, ...it.wrong]), ans: it.a, pick: null};
+    else if (v.mode === 'form') v.q = {it, kind: 'form', opts: shuffle([it.a, ...it.wrong]), ans: it.a, pick: null};
+    else if (v.mode === 'topic') { const others = shuffle(TOPIC.flatMap(t => t.ph).filter(x => x.en !== it.en)).slice(0, 3).map(x => x.en); v.q = {it, kind: 'tphr', opts: shuffle([it.en, ...others]), ans: it.en, pick: null}; }
     else if (v.sub === 'listen') v.q = {it, kind: 'listen', pick: null, typed: ''};
     else if (it.uk) { const uk = Math.random() < .6; v.q = {it, kind: 'ukus', uk, opts: shuffle([it.uk, it.us]), ans: uk ? it.uk : it.us, pick: null}; }
     else v.q = {it, kind: 'hard', opts: shuffle([it.w, ...it.wrong]), ans: it.w, pick: null};
@@ -171,7 +177,7 @@
     const v = ui.vd, q = v.q; if (!q || q.pick !== null) return;
     q.pick = i; const ok = q.opts[i] === q.ans;
     v.s.n++; if (ok) v.s.c++;
-    tally(q.kind === 'ukus' || q.kind === 'hard' ? 'spell' : q.kind, q.it.id, ok); XP(1, 'vocab'); render();
+    tally(q.kind === 'ukus' || q.kind === 'hard' ? 'spell' : q.kind === 'tphr' ? 'topic' : q.kind, q.it.id, ok); XP(1, 'vocab'); render();
   }
   function vdListenCheck() {
     const v = ui.vd, q = v.q; if (!q || q.pick !== null) return;
@@ -195,6 +201,13 @@
       head = `<div class="small muted">空欄に入る、最も自然な語は？</div><div class="vq">${esc(it.q).replace('___', '<b>＿＿＿</b>')}</div>`;
       const full = it.q.replace('___', it.a);
       after = `<div class="row"><span class="ex" style="font-size:16px">${esc(full)}</span>${sayBtn(full, '聞く')}</div><p class="note">${esc(it.tip)}</p>`;
+    } else if (q.kind === 'form') {
+      head = `<div class="small muted"><span class="lv lv-B">TOEIC Part 5 型</span> 空欄に入る正しい形は？（空欄の前後から品詞を判断）</div><div class="vq">${esc(it.q).replace('___', '<b>＿＿＿</b>')}</div>`;
+      const full = it.q.replace('___', it.a);
+      after = `<div class="row"><span class="ex" style="font-size:16px">${esc(full)}</span>${sayBtn(full, '聞く')}</div><p class="note">${esc(it.tip)}</p>`;
+    } else if (q.kind === 'tphr') {
+      head = `<div class="small muted">「${esc(it.ja)}」を英語で言うと？</div>`;
+      after = `<div class="row"><span class="dbig" style="font-size:24px">${esc(it.en)}</span>${sayBtn(it.en)}</div>`;
     } else if (q.kind === 'ukus') {
       head = `<div class="small muted">「${esc(it.ja)}」の<b>${q.uk ? 'イギリス式' : 'アメリカ式'}</b>つづりは？</div>`;
       after = `<div class="small">イギリス式 <b style="font-family:var(--f-word)">${esc(it.uk)}</b> ／ アメリカ式 <b style="font-family:var(--f-word)">${esc(it.us)}</b>（${esc(it.rule)}）</div><p class="note">IELTS はどちらのつづりでも正解ですが、1つの答案の中で混ぜないのが安全です。</p>`;
@@ -214,22 +227,39 @@
     const v = ui.vd;
     if (v.mode === 'para') return `<table class="vtable"><tr><th>基本語</th><th>言い換え</th><th>意味</th></tr>${PARA.map(g => `<tr><td>${esc(g.w)}</td><td class="en">${g.syn.map(esc).join(', ')}</td><td>${esc(g.ja)}</td></tr>`).join('')}</table>`;
     if (v.mode === 'coll') return `<table class="vtable">${COLL.map(c => `<tr><td>${esc(c.a)}</td><td><span class="en">${esc(c.q.replace('___', c.a))}</span><div class="small muted">${esc(c.tip)}</div></td></tr>`).join('')}</table>`;
+    if (v.mode === 'form') return `<table class="vtable">${FORM.map(c => `<tr><td>${esc(c.a)}</td><td><span class="en">${esc(c.q.replace('___', c.a))}</span><div class="small muted">${esc(c.tip)}</div></td></tr>`).join('')}</table>`;
     return `<table class="vtable"><tr><th>イギリス</th><th>アメリカ</th><th>意味・ルール</th></tr>${UKUS.map(x => `<tr><td>${esc(x.uk)}</td><td class="en">${esc(x.us)}</td><td>${esc(x.ja)} <span class="small muted">${esc(x.rule)}</span></td></tr>`).join('')}</table>
       <h3 style="font-size:15px;margin-top:14px">間違えやすいつづり</h3><table class="vtable">${HARD.map(x => `<tr><td>${esc(x.w)}</td><td class="small muted">× ${x.wrong.map(esc).join('、')}</td><td>${esc(x.ja)}</td></tr>`).join('')}</table>`;
   }
+  function vTopic() {
+    const v = ui.vd, T = TOPIC.find(t => t.k === v.topic) || TOPIC[0];
+    const words = WORDS.filter(w => w.tags.includes(T.tag) && ['B1', 'B2', 'C1'].includes(w.lv)).sort((a, b) => LEVELS.indexOf(b.lv) - LEVELS.indexOf(a.lv)).slice(0, 30);
+    const chips = `<div class="chips">${TOPIC.map(t => `<button class="chip" style="font-family:var(--f-ui)" data-act="vdtopic" data-k="${t.k}" aria-pressed="${t.k === T.k}">${esc(t.name)}</button>`).join('')}</div>`;
+    if (v.tquiz) return `${chips}<div class="row" style="justify-content:space-between"><b>${esc(T.name)}：フレーズ確認テスト</b><button class="btn ghost" data-act="vdtquiz">覚える画面に戻る</button></div>${vdQuestion()}`;
+    return `${chips}
+      <div class="panel" style="gap:10px"><h3 style="font-size:17px">${esc(T.name)}でよく使うフレーズ</h3>
+        <table class="vtable">${T.ph.map(x => `<tr><td><button class="btn ghost" style="padding:0;font-family:var(--f-word);font-size:15px;text-align:left" data-act="say" data-text="${esc(x.en)}">${esc(x.en)}</button></td><td>${esc(x.ja)}</td></tr>`).join('')}</table>
+        <h3 style="font-size:15px">このトピックの重要語（B1〜C1・タップで発音）</h3>
+        <div class="wordpills">${words.map(w => `<button class="wp" data-act="say" data-text="${esc(w.w)}" title="${esc(w.ja)}">${lvChip(w.lv)} ${esc(w.w)} <span class="muted small">${esc(w.ja)}</span></button>`).join('')}</div>
+        <h3 style="font-size:15px">ライティング Task 2 の出題例</h3><div class="cue" style="font-size:16px">${esc(T.task)}</div>
+        <div class="row"><button class="btn primary" data-act="vdtquiz">フレーズ確認テスト</button><button class="btn" data-act="vdtopicquiz" data-tag="${T.tag}">このトピックの単語でクイズ</button><button class="btn" data-act="tab" data-tab="write">ライティングで書いてみる</button></div>
+      </div>`;
+  }
   function vVocab() {
     const v = ui.vd; if (!v.q) vdNew();
-    const modes = [['para', '言い換え'], ['coll', 'コロケーション'], ['spell', 'つづり']];
+    const modes = [['para', '言い換え'], ['coll', 'コロケーション'], ['form', '品詞（TOEIC型）'], ['spell', 'つづり'], ['topic', 'トピック別']];
     const subs = [['hard', '間違えやすい'], ['ukus', '英米差'], ['listen', '聞いて書く']];
     const acc = k => { const a = S.drill.acc[k]; return a && a.n ? `${Math.round(a.c / a.n * 100)}%（${a.n}問）` : '—'; };
     const intro = {para: 'IELTS は「本文と設問で同じ語を使わない」試験。important ↔ crucial のような言い換えに気づけるかが、読解・リスニングの正答率を左右します。ライティングでも同じ語の繰り返しを避けると語彙点が上がります。',
       coll: '単語同士の「相性」。make a decision / heavy rain のように、意味が合っていても組み合わせが不自然だと減点されます。日本語訳から考えると間違えやすいところ。',
-      spell: 'IELTS はつづりミスが即不正解・減点。英米どちらのつづりも正解ですが、答案の中で混ぜないのが安全です。'}[v.mode];
+      spell: 'IELTS はつづりミスが即不正解・減点。英米どちらのつづりも正解ですが、答案の中で混ぜないのが安全です。',
+      form: 'TOEIC Part 5 でおなじみの「品詞問題」。空欄の前後（冠詞の後は名詞、名詞の前は形容詞、動詞を修飾するのは副詞）で答えを決めます。IELTS のライティングでも、品詞を正しく使い分けられるかが文法点に直結します。',
+      topic: 'IELTS のライティング・スピーキングで繰り返し出るトピックごとに、使えるフレーズと重要語をまとめました。フレーズを覚えたら確認テスト、最後に出題例で1本書いてみましょう。'}[v.mode];
     return `<div class="row">${seg(modes, v.mode, 'vdmode')}${v.mode === 'spell' ? seg(subs, v.sub, 'vdsub') : ''}</div>
       <div class="sheet panel">
-        <div class="row" style="justify-content:space-between"><span class="small muted">今回 ${v.s.c}/${v.s.n} 問正解 · 通算 ${acc(v.mode)}</span>
-          <div class="row"><label class="small row" style="gap:4px"><input type="checkbox" data-act="vdmiss" ${v.missOnly ? 'checked' : ''}>間違えた問題だけ</label><button class="btn ghost" data-act="vdlist">${v.list ? '問題に戻る' : '一覧で覚える'}</button></div></div>
-        ${v.list ? vdList() : vdQuestion()}
+        <div class="row" style="justify-content:space-between">${v.mode === 'topic' ? `<b>IELTS 頻出トピック</b>` : `<span class="small muted">今回 ${v.s.c}/${v.s.n} 問正解 · 通算 ${acc(v.mode)}</span>`}
+          ${v.mode === 'topic' ? '' : `<div class="row"><label class="small row" style="gap:4px"><input type="checkbox" data-act="vdmiss" ${v.missOnly ? 'checked' : ''}>間違えた問題だけ</label><button class="btn ghost" data-act="vdlist">${v.list ? '問題に戻る' : '一覧で覚える'}</button></div>`}</div>
+        ${v.mode === 'topic' ? vTopic() : v.list ? vdList() : vdQuestion()}
       </div>
       <p class="note">${intro}</p>`;
   }
@@ -239,6 +269,9 @@
     vdmiss: (x, el) => { ui.vd.missOnly = el.checked; ui.vd.q = null; render(); },
     vdlist: () => { ui.vd.list = !ui.vd.list; render(); },
     vdans: x => vdAnswer(+x.i),
+    vdtopic: x => { ui.vd.topic = x.k; ui.vd.q = null; render(); },
+    vdtquiz: () => { ui.vd.tquiz = !ui.vd.tquiz; ui.vd.q = null; vdNew(); render(); },
+    vdtopicquiz: x => { S.topic = x.tag; ui.quiz = null; save(); ACT.tab({tab: 'quiz'}); },
     vdnext: () => { vdNew(); render(); if (ui.vd.q.kind === 'listen') { $('#vdin')?.focus(); setTimeout(() => speak(sayWord(ui.vd.q.it)), 250); } },
     vdcheck: () => vdListenCheck(),
     vdsay: x => speak(sayWord(ui.vd.q.it), !!x.slow),
@@ -251,7 +284,7 @@
   });
   document.addEventListener('keydown', e => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (S.tab === 'vocab' && !ui.vd.list && ui.vd.q && ui.vd.q.kind !== 'listen' && !e.target.closest('input,textarea,select')) {
+    if (S.tab === 'vocab' && !ui.vd.list && (ui.vd.mode !== 'topic' || ui.vd.tquiz) && ui.vd.q && ui.vd.q.kind !== 'listen' && !e.target.closest('input,textarea,select')) {
       if (e.key === 'Enter' && ui.vd.q.pick !== null) ACT.vdnext();
       else if (/^[1-4]$/.test(e.key) && ui.vd.q.pick === null && +e.key <= ui.vd.q.opts.length) vdAnswer(+e.key - 1);
     }
@@ -306,7 +339,7 @@
     const spN = sp.n + dc.n, spV = spN ? (sp.c + dc.sum / 100) / spN : null;
     return [
       ['単語', ratio(qc, qn), qn, 'quiz'], ['言い換え', ratio(A.para?.c, A.para?.n), A.para?.n || 0, 'vocab:para'], ['コロケ', ratio(A.coll?.c, A.coll?.n), A.coll?.n || 0, 'vocab:coll'],
-      ['つづり', spV, spN, 'dict'], ['構文', ratio(so, sn), sn, 'sent'], ['読解', rd, rn, 'read'], ['リスニング', ls, ln, 'listen'],
+      ['つづり', spV, spN, 'dict'], ['品詞', ratio(A.form?.c, A.form?.n), A.form?.n || 0, 'vocab:form'], ['構文', ratio(so, sn), sn, 'sent'], ['読解', rd, rn, 'read'], ['リスニング', ls, ln, 'listen'],
     ];
   }
   function radar(sk) {

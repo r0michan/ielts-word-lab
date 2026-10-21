@@ -270,6 +270,10 @@ textarea{width:100%;min-height:130px;font-family:var(--f-word);font-size:14px}
 .support .y{color:var(--good)} .support .n{color:var(--bad)}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bad-soft);border-radius:9px;padding:10px 12px;font-size:14px}
 
+.subrail{margin-top:2px}
+.subrail .tabs{gap:2px;padding:2px}
+.subrail .tab{font-size:13.5px;padding:6px 12px;font-weight:700}
+.subrail .tab[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}
 /* ---- cute layer: rounded, soft, bouncy ---- */
 body{background-color:var(--bg);background-image:radial-gradient(var(--line) 1.1px,transparent 1.5px);background-size:24px 24px;font-weight:500}
 .top h1{display:flex;align-items:center;gap:8px;font-weight:900;letter-spacing:.03em}
@@ -286,7 +290,10 @@ body{background-color:var(--bg);background-image:radial-gradient(var(--line) 1.1
 .btn.ghost:hover{transform:none}
 .chip{border-width:1.5px;font-weight:700}
 .chip[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-.seg{border-radius:999px;border-width:1.5px}
+.seg{border-radius:999px;border-width:1.5px;flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+@media (max-width:640px){.band .eq{display:none}}
+.seg button{white-space:nowrap;flex:none}
 .tabrail{border-bottom:0;padding-bottom:2px}
 .tabs{gap:4px;padding:4px 2px}
 .tab{border:0;border-radius:999px;padding:8px 14px;margin:0;font-weight:700;transition:background .15s,color .15s}
@@ -310,7 +317,7 @@ select,input[type=text],input[type=search],input[type=password],textarea{border-
   </header>
   <section class="bandmap" id="bandmap" aria-label="CEFR・ケンブリッジ英検・IELTSの対応"></section>
   <section class="filters" id="filters"></section>
-  <nav class="tabrail"><div class="tabs" id="tabs" role="tablist"></div></nav>
+  <nav class="navwrap"><div class="tabrail"><div class="tabs" id="tabs" role="tablist"></div></div><div class="tabrail subrail" id="subrail"><div class="tabs" id="subtabs" role="tablist"></div></div></nav>
   <main class="panel" id="panel"></main>
   <p class="note">音声認識・録音は Chrome / Edge で動きます。音声認識にはインターネット接続が必要です。発音スコアと添削チェックは自動判定の目安で、IELTSの公式採点ではありません。</p>
 </div>
@@ -600,15 +607,17 @@ function diffWords(model, answer) {
 }
 
 /* ---------- rendering ---------- */
+// other exams at the same CEFR level (目安 — full table in スコア換算・試験比較)
+const BAND_EQ = {A1: '英検3〜5級', A2: '英検準2級 · TOEIC 225+', B1: '英検2級 · TOEIC 550+', B2: '英検準1級 · TOEIC 785+', C1: '英検1級 · TOEIC 945+', C2: ''};
 function renderBand() {
   const n = l => WORDS.filter(w => w.lv === l).length;
   $('#bandmap').innerHTML = LEVELS.map(l => { const i = LEVEL_INFO[l];
-    return `<div class="band${i.target ? ' target' : ''}" data-g="${lvG(l)}"><b>${l}</b><span class="cam">${i.cam}</span><span class="ie">IELTS ${i.ie}</span><span class="n">${n(l)}語</span></div>`; }).join('');
+    return `<div class="band${i.target ? ' target' : ''}" data-g="${lvG(l)}"><b>${l}</b><span class="cam">${i.cam}</span><span class="ie">IELTS ${i.ie}</span>${BAND_EQ[l] ? `<span class="n eq">${BAND_EQ[l]}</span>` : ''}<span class="n">${n(l)}語</span></div>`; }).join('');
 }
 const NO_FILTER = ['write', 'speak', 'settings'];
 function renderFilters() {
   const el = $('#filters');
-  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
+  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab', 'tests'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
   if (el.hidden) return;
   const n = filtered().length;
   el.innerHTML = `
@@ -620,18 +629,39 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',1,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
-  ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','国別スコア',0,'exam'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+  ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','スコア換算・試験比較',1,'exam'],['tests','デイリー・週間・月間テスト',1,'both'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
+// Two-level navigation: mode → group pills → the group's tabs. A tab may sit in both modes (e.g. テスト, 記録).
+const NAV = {
+  learn: [['home', 'ホーム', ['home']], ['words', '単語', ['card', 'quiz', 'vocab', 'images', 'list']], ['grammar', '文法・表現', ['lessons', 'sent', 'expr', 'japan']],
+    ['ears', '聞く・話す', ['dict', 'pron']], ['tests', 'テスト', ['tests']], ['record', '記録・設定', ['notes', 'settings']]],
+  exam: [['home', 'ホーム', ['home']], ['tests', 'テスト', ['tests', 'mock']], ['skills', '4技能', ['read', 'listen', 'write', 'speak']],
+    ['exams', 'スコア・試験比較', ['score']], ['record', '記録・設定', ['notes', 'settings']]],
+};
+const navGroup = (mode, tab) => NAV[mode].find(g => g[2].includes(tab));
 function renderTabs() {
-  const mode = S.mode || 'learn';
+  if (!navGroup(S.mode || 'learn', S.tab)) { const other = (S.mode || 'learn') === 'learn' ? 'exam' : 'learn'; if (navGroup(other, S.tab)) S.mode = other; }
+  const mode = S.mode || 'learn', g = navGroup(mode, S.tab) || NAV[mode][0];
+  const label = k => TABS.find(t => t[0] === k);
   const modeSeg = `<div class="modeseg" role="group" aria-label="モード"><button data-act="setmode" data-m="learn" aria-pressed="${mode === 'learn'}">学ぶ</button><button data-act="setmode" data-m="exam" aria-pressed="${mode === 'exam'}">試験対策</button></div>`;
-  $('#tabs').innerHTML = modeSeg + TABS.filter(t => t[3] === 'both' || t[3] === mode || t[0] === S.tab).map(([k, v, nw]) => `<button class="tab" role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${v}${nw ? '<span class="new">NEW</span>' : ''}</button>`).join('');
+  $('#tabs').innerHTML = modeSeg + NAV[mode].map(([k, v, tabs]) => `<button class="tab" role="tab" data-act="tgroup" data-g="${k}" aria-selected="${g[0] === k}">${v}${tabs.some(t => label(t)?.[2]) ? '<span class="new">NEW</span>' : ''}</button>`).join('');
+  $('#subrail').hidden = g[2].length < 2;
+  $('#subtabs').innerHTML = g[2].map(k => { const t = label(k) || [k, k, 0]; return `<button class="tab" role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${t[1]}${t[2] ? '<span class="new">NEW</span>' : ''}</button>`; }).join('');
 }
 function render() {
   renderFilters(); renderTabs();
   $('#panel').innerHTML = ({card: vCard, quiz: vQuiz, sent: vSent, write: vWrite, pron: vPron, speak: vSpeak, list: vList, settings: vSettings}[S.tab] || window.EXTRA_VIEWS?.[S.tab] || vCard)();
   if (S.tab === 'write') afterWriteRender();
+  keepPressedVisible();
+}
+// horizontally scrolling rails: bring the selected item into view without moving the page vertically
+function keepPressedVisible() {
+  document.querySelectorAll('.tabrail, .seg').forEach(sc => {
+    const b = sc.querySelector('[aria-selected="true"], [aria-pressed="true"]'); if (!b || sc.scrollWidth <= sc.clientWidth) return;
+    const br = b.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+    if (br.left < sr.left) sc.scrollLeft -= sr.left - br.left + 16; else if (br.right > sr.right) sc.scrollLeft += br.right - sr.right + 16;
+  });
 }
 const sayBtn = (text, label = '発音', slow) => `<button class="btn" data-act="say" data-text="${esc(text)}"${slow ? ' data-slow="1"' : ''}>${slow ? ICON.slow : ICON.speak}${label}</button>`;
 const emptyFilter = () => `<div class="sheet empty">この条件に当てはまる単語がありません。レベルかトピックを変えてください。</div>`;
@@ -1412,8 +1442,10 @@ function importWords() {
 /* ---------- events ---------- */
 function setWText(v) { S.wtext[wKey()] = v; saveSoon(); updateWStat(); }
 const ACT = {
-  setmode: d => { S.mode = d.m; const first = TABS.find(t => t[3] === d.m); if (first) S.tab = first[0]; save(); render(); },
-  tab: d => { if (S.tab === 'speak' && d.tab !== 'speak') spkReset(); if (ui.pron.busy) ui.pron.rec?.abort(); if (ui.sent.busy) ui.sent.rec?.abort(); S.tab = d.tab; ui.confirm = null; save(); render(); },
+  setmode: d => { S.mode = d.m; const g = NAV[d.m][1]; ACT.tab({tab: (S.lastTab || {})[d.m + ':' + g[0]] || g[2][0]}); },
+  tgroup: d => { const mode = S.mode || 'learn', g = NAV[mode].find(x => x[0] === d.g); ACT.tab({tab: (S.lastTab || {})[mode + ':' + g[0]] || g[2][0]}); },
+  tab: d => { const ng = navGroup(S.mode || 'learn', d.tab); if (ng) (S.lastTab = S.lastTab || {})[(S.mode || 'learn') + ':' + ng[0]] = d.tab;
+    if (S.tab === 'speak' && d.tab !== 'speak') spkReset(); if (ui.pron.busy) ui.pron.rec?.abort(); if (ui.sent.busy) ui.sent.rec?.abort(); S.tab = d.tab; ui.confirm = null; save(); render(); },
   lv: d => { const i = S.levels.indexOf(d.lv); if (i >= 0) { if (S.levels.length > 1) S.levels.splice(i, 1); } else S.levels.push(d.lv); ui.cram = false; ui.quiz = null; ui.sent.item = null; save(); render(); },
   preset: d => { S.levels = d.p === 'all' ? [...LEVELS] : ['B1', 'B2', 'C1']; ui.cram = false; ui.quiz = null; ui.sent.item = null; save(); render(); },
   say: d => speak(d.text, !!d.slow),
@@ -1564,6 +1596,9 @@ render();
 <script src="js/images.js"></script>
 <script src="js/progress.js"></script>
 <script src="data/drills.js"></script>
+<script src="data/drills2.js"></script>
 <script src="js/drills.js"></script>
+<script src="js/exams.js"></script>
+<script src="js/tests.js"></script>
 </body>
 </html>

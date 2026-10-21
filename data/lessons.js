@@ -13,6 +13,7 @@ window.LESSONS = [
 ]},
 {id:'g2', unit:'grammar', lv:'A2', title:'時制①：現在形と現在進行形', blocks:[
   {p:'現在形は「いつもそうであること」（習慣・事実・一般論）、現在進行形は「今まさにしていること・一時的な状況」を表します。IELTSのエッセイで一般論を書くときは現在形が基本です。'},
+  {img:['present','progressive']},
   {ex:[['I usually walk to work.','私はふだん歩いて通勤する。（習慣）'],['Water boils at 100 degrees.','水は100度で沸騰する。（事実）'],['I am living with my parents at the moment.','今は（一時的に）両親と住んでいる。'],['More and more people are working from home.','ますます多くの人が在宅勤務をしている。（変化の途中）']]},
   {tip:'know, like, believe, own, need などの「状態」を表す動詞は、原則として進行形にしません（I am knowing は誤り）。'},
   {q:['スピーキング Part 1「お仕事は？」への自然な答えは？',['I work as a nurse.','I am working as a nurse every day.','I worked as a nurse.'],0,'今の仕事＝いつものことなので現在形。'],},
@@ -20,6 +21,7 @@ window.LESSONS = [
 ]},
 {id:'g3', unit:'grammar', lv:'B1', title:'時制②：過去形と現在完了', blocks:[
   {p:'過去形は「過去に終わったこと」、現在完了（have + 過去分詞）は「過去から今につながっていること」です。日本人が最も間違えやすい区別の一つです。'},
+  {img:['past','perfect','since','for-time']},
   {table:[['形','使う場面','一緒に使う語'],['過去形','終わった時点がはっきりしている','yesterday, in 2019, last year, ago'],['現在完了','経験・継続・完了（今に影響）','since, for, ever, never, already, recently']]},
   {ex:[['I visited Kyoto last year.','去年京都を訪れた。'],['I have visited Kyoto three times.','京都に3回行ったことがある。（経験）'],['I have lived here since 2020.','2020年からここに住んでいる。（継続）'],['Prices have risen sharply in recent years.','近年、物価が急上昇している。（エッセイで頻出）']]},
   {warn:'yesterday や in 2019 のような「過去の一点」と現在完了は一緒に使えません。× I have finished it yesterday.'},
@@ -28,6 +30,7 @@ window.LESSONS = [
 ]},
 {id:'g4', unit:'grammar', lv:'B1', title:'時制③：未来の表し方', blocks:[
   {p:'未来は will だけではありません。予定・意図・予測で使い分けると、スピーキングが自然になります。'},
+  {img:['future']},
   {table:[['形','意味','例'],['will','その場で決めたこと・予測','I think it will rain.'],['be going to','前から決めている予定・根拠のある予測','I am going to study in Australia.'],['現在進行形','確定した予定','I am meeting my tutor tomorrow.'],['be likely to','可能性が高い（エッセイ向き）','Prices are likely to rise.']]},
   {ex:[['In the future, more people will probably work remotely.','将来、おそらくより多くの人がリモートで働くだろう。'],['I am going to take the IELTS test in March.','3月にIELTSを受ける予定です。']]},
   {tip:'エッセイの予測は will だけでなく be likely to / may / could を混ぜると、断定を避けた大人の文になります。'},
@@ -35,6 +38,7 @@ window.LESSONS = [
 ]},
 {id:'g5', unit:'grammar', lv:'B1', title:'冠詞 a / the / 無冠詞', blocks:[
   {p:'冠詞は日本語にないため、日本人の最大の弱点の一つです。基本は「数えられる名詞の単数には必ず何か付ける」「相手も特定できるものは the」「一般論は無冠詞の複数形か不可算名詞」です。'},
+  {img:['a','the','zero']},
   {table:[['場面','形','例'],['初めて出る1つのもの','a / an','I bought a car.'],['相手もどれかわかる','the','The car is red.'],['一般論（数えられる）','無冠詞＋複数','Cars cause pollution.'],['一般論（数えられない）','無冠詞','Pollution is a problem.'],['唯一のもの','the','the sun, the internet, the government']]},
   {ex:[['Technology has changed society.','テクノロジーは社会を変えた。（society は無冠詞）'],['The internet has made life easier.','インターネットは生活を便利にした。（the internet）'],['Children need love.','子どもには愛が必要だ。（一般論は無冠詞の複数）']]},
   {warn:'「the society」「the nature」は一般的な意味では使いません。The life is short. も × → Life is short.'},
@@ -52,6 +56,7 @@ window.LESSONS = [
 ]},
 {id:'g7', unit:'grammar', lv:'A2', title:'前置詞 in / on / at', blocks:[
   {p:'時と場所の前置詞は「範囲の大きさ」で考えます。at は点、on は面・日、in は広い範囲・期間です。'},
+  {img:['at','on','in','by-time','until']},
   {table:[['','時','場所'],['at','at 7 o\'clock, at night, at the weekend（英）','at the station, at the door'],['on','on Monday, on 5 May, on my birthday','on the wall, on the train, on the internet'],['in','in May, in 2020, in the morning, in summer','in Tokyo, in the room, in the car']]},
   {ex:[['The shop opens at nine on weekdays.','その店は平日9時に開く。'],['Prices rose in 2020.','2020年に物価が上がった。'],['I found it on the internet.','ネットで見つけた。']]},
   {q:['正しいのは？',['in Monday','on Monday','at Monday'],1,'曜日は on。']},

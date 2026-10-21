@@ -189,6 +189,7 @@
       ${z.kind === 'blank' ? `<p class="sentq">${shown}</p><p class="small muted">${esc(q.it.ja)}</p>` : `<p class="hw" style="font-size:clamp(26px,5vw,36px)">${esc(q.it.phrase)}</p><p class="ex">${esc(q.it.plain)}</p>`}
       <div class="opts">${q.opts.map((o, i) => { let c = 'opt' + (z.kind === 'blank' ? ' en' : ''); if (done && o === q.ans) c += ' ok'; else if (done && i === q.pick) c += ' ng';
         return `<button class="${c}" data-act="xianswer" data-i="${i}" ${done ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div>
+      ${done && window.IMG_SMALL ? IMG_SMALL(q.it.ans) : ''}
       ${done ? `<div class="row"><span class="pat">${esc(q.it.phrase)}</span><span class="small">${esc(q.it.ja)}</span>${sayAs(q.it.plain, '', '')}<button class="btn primary" data-act="xinext">${z.i + 1 < z.qs.length ? '次へ' : '結果を見る'} <kbd>Enter</kbd></button></div>` : ''}
     </div>`;
   }

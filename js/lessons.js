@@ -54,6 +54,7 @@
         return `<button class="${c}" data-act="lqans" data-k="${k}" data-i="${i}" ${a != null ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div>
         ${a != null ? `<span class="small">${a === ans ? '<b style="color:var(--good)">正解。</b>' : '<b style="color:var(--bad)">不正解。</b>'} ${esc(why)}</span>` : ''}</div>`;
     }
+    if (b.img) return window.IMG_CARDS ? `<div class="panel" style="gap:6px"><span class="small muted">イメージで確認（タップで詳しく）</span>${IMG_CARDS(b.img)}</div>` : '';
     if (b.go) return `<div><button class="btn" data-act="lgo" data-tab="${b.go[0]}" data-x="${esc(b.go[2] || '')}">${esc(b.go[1])} →</button></div>`;
     return '';
   }

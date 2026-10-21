@@ -107,11 +107,12 @@
       ${key(w.w) !== key(tok) ? `<span class="lk-from">「${esc(tok)}」の元の形</span>` : ''}
       ${w.ipa ? `<span class="ipa" style="font-size:16px">/${esc(w.ipa)}/</span>` : ''}
       <span class="lk-ja">${esc(w.ja)}</span>
+      ${window.IMG_SMALL ? IMG_SMALL(w.w) : ''}
       ${w.ex ? `<span class="lk-ex">${esc(w.ex)}</span>` : ''}
       <div class="row"><button class="btn" data-act="say" data-text="${esc(w.w)}">${ICON.speak}発音</button>
         <button class="btn ${inReview ? '' : 'primary'}" data-lkadd="${esc(w.id)}" ${inReview ? 'disabled' : ''}>${inReview ? '復習リストに入っています' : '単語カードで復習する'}</button></div>`
       : `<span class="lk-w" style="padding-right:20px">${esc(tok)}</span>
-      <span class="small muted">この単語は収録語（${WORDS.length}語）にありません。</span>
+      ${window.IMG_SMALL && IMG_SMALL(tok) ? IMG_SMALL(tok) : `<span class="small muted">この単語は収録語（${WORDS.length}語）にありません。</span>`}
       <div class="row"><button class="btn" data-act="say" data-text="${esc(tok)}">${ICON.speak}発音</button>
         <a class="btn" href="https://dictionary.cambridge.org/dictionary/english-japanese/${encodeURIComponent(tok.toLowerCase().replace(/[’']s$/, ''))}" target="_blank" rel="noopener">Cambridge 辞書で調べる</a></div>`);
     pop.hidden = false;

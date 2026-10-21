@@ -36,6 +36,7 @@
   --c1:#3FBF9F; --c2:#F0905A; --c3:#8F9EF0; color-scheme:dark;}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.65 var(--f-ui);-webkit-font-smoothing:antialiased}
 .wrap{max-width:1040px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
@@ -574,7 +575,7 @@ function renderBand() {
 const NO_FILTER = ['write', 'speak', 'settings'];
 function renderFilters() {
   const el = $('#filters');
-  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
+  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
   if (el.hidden) return;
   const n = filtered().length;
   el.innerHTML = `
@@ -586,7 +587,7 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',1,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['images','イメージ図鑑',1,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
   ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','国別スコア',0,'exam'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 function renderTabs() {
@@ -1527,6 +1528,7 @@ render();
 <script src="js/notes.js"></script>
 <script src="js/mock.js"></script>
 <script src="js/lessons.js"></script>
+<script src="js/images.js"></script>
 <script src="js/progress.js"></script>
 </body>
 </html>

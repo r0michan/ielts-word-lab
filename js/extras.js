@@ -135,41 +135,85 @@
   ui.read = {i: 0, ans: {}, checked: false};
   S.readBest = S.readBest || {};
   const LBL = {T: 'TRUE', F: 'FALSE', NG: 'NOT GIVEN'};
+  const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+  const PL = 'ABCDEFGH';
+  const nzr = x => String(x ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const INTRO = {
+    tfng: '本文の内容と一致すれば TRUE、矛盾すれば FALSE、本文に書かれていなければ NOT GIVEN を選びます。',
+    heading: '各段落に最も合う見出しを選びます（使わない見出しもあります）。',
+    mc: '正しいものを1つ選びます。',
+    summary: '本文から語を選んで要約の空欄を埋めます。語数制限を守りましょう。',
+    info: '次の情報が書かれている段落を選びます（同じ段落を2回選ぶこともあります）。',
+  };
+  // Every passage → flat list of questions {n, type, g, prompt, ok(answer), answerText, why}
+  function flat(P0) {
+    const groups = P0.groups || [{type: 'tfng', items: P0.qs}];
+    const out = []; let n = 0;
+    const picked = a => a !== '' && a != null;
+    groups.forEach((g, gi) => g.items.forEach(it => {
+      const q = {n: n++, type: g.type, g: gi};
+      if (g.type === 'tfng') Object.assign(q, {prompt: it[0], ok: a => a === it[1], answerText: LBL[it[1]], why: it[2]});
+      if (g.type === 'heading') Object.assign(q, {prompt: `段落 ${PL[it[0]]}`, ok: a => picked(a) && +a === it[1], answerText: `${ROMAN[it[1]]}. ${g.options[it[1]]}`, why: it[2] || ''});
+      if (g.type === 'mc') Object.assign(q, {prompt: it[0], opts: it[1], ok: a => picked(a) && +a === it[2], answerText: `${'ABCD'[it[2]]}. ${it[1][it[2]]}`, why: it[3] || ''});
+      if (g.type === 'summary') Object.assign(q, {prompt: it[0], ok: a => nzr(a) !== '' && it[1].split('/').some(x => nzr(x) === nzr(a)), answerText: it[1].split('/')[0], why: it[2] || ''});
+      if (g.type === 'info') Object.assign(q, {prompt: it[0], ok: a => picked(a) && +a === it[1], answerText: `段落 ${PL[it[1]]}`, why: it[2] || ''});
+      out.push(q);
+    }));
+    return out;
+  }
+  window.READ_FLAT = flat;
+  function qInput(q, g, P0, a, checked) {
+    if (q.type === 'tfng') return `<div class="seg" role="group" aria-label="問${q.n + 1}の答え">${['T', 'F', 'NG'].map(v => {
+      let cls = ''; if (checked) { if (q.ok(v)) cls = 'ok'; else if (v === a) cls = 'ng'; }
+      return `<button class="${cls}" data-act="rans" data-q="${q.n}" data-v="${v}" aria-pressed="${a === v}" ${checked ? 'disabled' : ''}>${LBL[v]}</button>`; }).join('')}</div>`;
+    if (q.type === 'mc') return `<div class="opts">${q.opts.map((o, i) => { let c = 'opt'; if (checked && q.ok(String(i))) c += ' ok'; else if (checked && String(i) === a) c += ' ng';
+      return `<button class="${c}" data-act="rans" data-q="${q.n}" data-v="${i}" ${checked ? 'disabled' : ''} style="${String(i) === a && !checked ? 'border-color:var(--accent);background:var(--accent-soft)' : ''}">${'ABCD'[i]}. ${esc(o)}</button>`; }).join('')}</div>`;
+    if (q.type === 'heading') return `<select class="rpick" data-q="${q.n}" ${checked ? 'disabled' : ''} aria-label="段落の見出し"><option value="">— 見出しを選ぶ —</option>${g.options.map((o, i) => `<option value="${i}"${a === String(i) ? ' selected' : ''}>${ROMAN[i]}. ${esc(o)}</option>`).join('')}</select>`;
+    if (q.type === 'info') return `<select class="rpick" data-q="${q.n}" ${checked ? 'disabled' : ''} aria-label="段落"><option value="">— 段落 —</option>${P0.paras.map((_, i) => `<option value="${i}"${a === String(i) ? ' selected' : ''}>${PL[i]}</option>`).join('')}</select>`;
+    if (q.type === 'summary') return `<input type="text" class="rgap" data-q="${q.n}" value="${esc(a || '')}" ${checked ? 'disabled' : ''} autocomplete="off" spellcheck="false" style="font-family:var(--f-word);font-size:16px;max-width:240px" aria-label="空欄${q.n + 1}">`;
+    return '';
+  }
   function vReading() {
     const r = ui.read, P0 = RD[r.i];
     if (!P0) return '<div class="sheet empty">読解の文章がありません。</div>';
+    const qs = flat(P0), groups = P0.groups || [{type: 'tfng', items: P0.qs}];
     const words = P0.paras.join(' ').split(/\s+/).length;
-    const score = r.checked ? P0.qs.filter((q, i) => r.ans[i] === q[1]).length : null;
+    const score = r.checked ? qs.filter(q => q.ok(r.ans[q.n])).length : null;
+    const answered = qs.filter(q => r.ans[q.n] != null && r.ans[q.n] !== '').length;
     const idx = formIndex(), keyW = new Map();
     P0.paras.join(' ').split(/\s+/).forEach(t => { const w = idx.get(key(t)); if (w && ['B2', 'C1', 'C2'].includes(w.lv)) keyW.set(w.id, w); });
     const toks = new Set(key(P0.paras.join(' ')).split(' '));
     const mine = looked.filter(w => [...forms(w.w)].some(f => toks.has(f)));
-    return `<div class="row"><select id="rsel" aria-label="文章">${RD.map((x, i) => `<option value="${i}"${i === r.i ? ' selected' : ''}>${esc(x.title)}（${x.lv} · ${esc(x.topic)}）${S.readBest[x.id] != null ? ` — ベスト ${S.readBest[x.id]}/${x.qs.length}` : ''}</option>`).join('')}</select>
-      <span class="small muted">${words}語 · わからない単語はタップすると意味が出ます</span></div>
+    const types = [...new Set(groups.map(g => g.type))].map(t => ({tfng: 'T/F/NG', heading: '見出し', mc: '選択', summary: '穴埋め', info: '段落探し'}[t])).join('・');
+    return `<div class="row"><select id="rsel" aria-label="文章">${RD.map((x, i) => `<option value="${i}"${i === r.i ? ' selected' : ''}>${esc(x.title)}（${x.lv} · ${esc(x.topic)}）${S.readBest[x.id] != null ? ` — ベスト ${S.readBest[x.id]}/${flat(x).length}` : ''}</option>`).join('')}</select>
+      <span class="small muted">${words}語 · ${types} · わからない単語はタップすると意味が出ます</span></div>
     <article class="sheet panel">
       <div class="row" style="justify-content:space-between"><h2 style="font-family:var(--f-word);font-size:24px">${esc(P0.title)}</h2>${lvChip(P0.lv)}</div>
-      <div class="passage">${P0.paras.map((t, i) => `<div class="para"><span class="pl">${'ABCDEFG'[i]}<button class="iconbtn" data-act="say" data-text="${esc(t)}" aria-label="段落${'ABCDEFG'[i]}を読み上げ">${ICON.speak}</button></span><p class="tx">${esc(t)}</p></div>`).join('')}</div>
+      <div class="passage">${P0.paras.map((t, i) => `<div class="para"><span class="pl">${PL[i]}<button class="iconbtn" data-act="say" data-text="${esc(t)}" aria-label="段落${PL[i]}を読み上げ">${ICON.speak}</button></span><p class="tx">${esc(t)}</p></div>`).join('')}</div>
     </article>
     <section class="sheet panel">
-      <div><b>Questions 1–${P0.qs.length}</b><p class="small muted">本文の内容と一致すれば TRUE、矛盾すれば FALSE、本文に書かれていなければ NOT GIVEN を選びます。</p></div>
-      <ol class="rq">${P0.qs.map((q, i) => { const a = r.ans[i];
-        return `<li><span class="small muted">${i + 1}.</span><span class="st">${esc(q[0])}</span>
-          <div class="seg" role="group" aria-label="問${i + 1}の答え">${['T', 'F', 'NG'].map(v => {
-            let cls = ''; if (r.checked) { if (v === q[1]) cls = 'ok'; else if (v === a) cls = 'ng'; }
-            return `<button class="${cls}" data-act="rans" data-q="${i}" data-v="${v}" aria-pressed="${a === v}" ${r.checked ? 'disabled' : ''}>${LBL[v]}</button>`; }).join('')}</div>
-          ${r.checked ? `<span class="why">${a === q[1] ? '✓ 正解' : `× 正解は ${LBL[q[1]]}`} — ${esc(q[2])}</span>` : ''}</li>`; }).join('')}</ol>
-      ${r.checked ? `<div class="row"><b style="font-size:18px">${score} / ${P0.qs.length} 問正解</b><button class="btn" data-act="rretry">解き直す</button>${r.i + 1 < RD.length ? '<button class="btn primary" data-act="rnext">次の文章</button>' : ''}</div>`
-        : `<div class="row"><button class="btn primary" data-act="rcheck" ${Object.keys(r.ans).length < P0.qs.length ? 'disabled' : ''}>答え合わせ</button><span class="small muted">${Object.keys(r.ans).length} / ${P0.qs.length} 回答済み</span></div>`}
+      ${groups.map((g, gi) => { const gq = qs.filter(q => q.g === gi);
+        return `<div class="panel" style="gap:10px"><div><b>Questions ${gq[0].n + 1}–${gq[gq.length - 1].n + 1}</b><p class="small muted">${esc(g.intro || INTRO[g.type])}</p></div>
+        ${g.type === 'heading' ? `<div class="small" style="background:var(--sunk);border-radius:8px;padding:8px 12px;font-family:var(--f-word)">${g.options.map((o, i) => `${ROMAN[i]}. ${esc(o)}`).join('<br>')}</div>` : ''}
+        ${g.type === 'summary' && g.box ? `<div class="small" style="background:var(--sunk);border-radius:8px;padding:8px 12px;font-family:var(--f-word)">${g.box.map(esc).join(' · ')}</div>` : ''}
+        <ol class="rq">${gq.map(q => { const a = r.ans[q.n];
+          return `<li><span class="small muted">${q.n + 1}.</span><span class="st">${esc(q.prompt)}</span>${qInput(q, g, P0, a, r.checked)}
+            ${r.checked ? `<span class="why">${q.ok(a) ? '✓ 正解' : `× 正解は ${esc(q.answerText)}`}${q.why ? ` — ${esc(q.why)}` : ''}</span>` : ''}</li>`; }).join('')}</ol></div>`; }).join('')}
+      ${r.checked ? `<div class="row"><b style="font-size:18px">${score} / ${qs.length} 問正解</b><button class="btn" data-act="rretry">解き直す</button>${r.i + 1 < RD.length ? '<button class="btn primary" data-act="rnext">次の文章</button>' : ''}</div>`
+        : `<div class="row"><button class="btn primary" data-act="rcheck">答え合わせ</button><span class="small muted">${answered} / ${qs.length} 回答済み</span></div>`}
     </section>
     ${keyW.size ? `<section class="panel" style="gap:8px"><span class="small muted">この文章の B2 以上の重要語（タップで発音）</span><div class="wordpills">${[...keyW.values()].map(w => `<button class="wp" data-act="say" data-text="${esc(w.w)}">${lvChip(w.lv)} ${esc(w.w)} <span class="muted small">${esc(w.ja)}</span></button>`).join('')}</div></section>` : ''}
     ${mine.length ? `<section class="panel" style="gap:8px"><span class="small muted">調べた単語</span><div class="wordpills">${mine.map(w => `<button class="wp" data-act="say" data-text="${esc(w.w)}">${esc(w.w)} <span class="muted small">${esc(w.ja)}</span></button>`).join('')}</div></section>` : ''}`;
   }
+  const collectInputs = () => document.querySelectorAll('.rgap, .rpick').forEach(el => { ui.read.ans[+el.dataset.q] = el.value; });
   Object.assign(ACT, {
-    rans: d => { if (ui.read.checked) return; ui.read.ans[+d.q] = d.v; render(); },
-    rcheck: () => { const r = ui.read, P0 = RD[r.i]; r.checked = true; const sc = P0.qs.filter((q, i) => r.ans[i] === q[1]).length; S.readBest[P0.id] = Math.max(S.readBest[P0.id] ?? 0, sc); save(); render(); },
+    rans: d => { if (ui.read.checked) return; collectInputs(); ui.read.ans[+d.q] = d.v; render(); },
+    rcheck: () => { collectInputs(); const r = ui.read, P0 = RD[r.i]; r.checked = true; const sc = flat(P0).filter(q => q.ok(r.ans[q.n])).length; S.readBest[P0.id] = Math.max(S.readBest[P0.id] ?? 0, sc); save(); render(); },
     rretry: () => { ui.read.ans = {}; ui.read.checked = false; render(); scrollTo({top: 0}); },
     rnext: () => { ui.read.i++; ui.read.ans = {}; ui.read.checked = false; render(); scrollTo({top: 0}); },
   });
+  document.addEventListener('input', e => { if (e.target.classList?.contains('rgap')) ui.read.ans[+e.target.dataset.q] = e.target.value; });
+  document.addEventListener('change', e => { if (e.target.classList?.contains('rpick')) ui.read.ans[+e.target.dataset.q] = e.target.value; });
 
   /* ---------- country scores ---------- */
   const CD = window.COUNTRIES || {list: []};

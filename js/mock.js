@@ -21,7 +21,7 @@
   const DAY = 864e5;
   const RD = () => window.READING || [], LS = () => window.LISTENING || [];
   const nz = x => String(x ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const lisRight = (q, a) => a != null && a !== '' && (q[0] === 'mc' ? a === q[2] : q[2].split('/').some(x => nz(x) === nz(a)));
+  const lisRight = (q, a) => a != null && a !== '' && (q[0] !== 'gap' ? a === q[2] : q[2].split('/').some(x => nz(x) === nz(a)));
 
   /* ---------- band estimates (IELTS 40-question tables, scaled) ---------- */
   const L_TABLE = [[39, 9], [37, 8.5], [35, 8], [32, 7.5], [30, 7], [26, 6.5], [23, 6], [18, 5.5], [16, 5], [13, 4.5], [10, 4], [6, 3.5], [4, 3], [0, 2.5]];
@@ -105,7 +105,7 @@
   function leaveStep() {
     const m = ui.mock, s = m.steps[m.cur], r = {type: s.type};
     if (s.type === 'listen') { if (!ui.lis.checked) ACT.lcheck(); const T = LS()[s.i]; r.ok = T.qs.filter((q, k) => lisRight(q, ui.lis.ans[k])).length; r.total = T.qs.length; r.title = T.title; }
-    if (s.type === 'read') { if (!ui.read.checked) ACT.rcheck(); const P0 = RD()[s.i]; r.ok = P0.qs.filter((q, k) => ui.read.ans[k] === q[1]).length; r.total = P0.qs.length; r.title = P0.title; }
+    if (s.type === 'read') { if (!ui.read.checked) ACT.rcheck(); const P0 = RD()[s.i], F = READ_FLAT(P0); r.ok = F.filter(q => q.ok(ui.read.ans[q.n])).length; r.total = F.length; r.title = P0.title; }
     if (s.type === 'write') { const t = $('#essay')?.value || S.wtext['p' + s.pi] || ''; r.words = (cleanText(t).match(/[A-Za-z][A-Za-z'’-]*/g) || []).length; r.task = s.task; r.min = WRITING.tasks[s.task].min;
       const f = t.trim() ? analyzeWriting(t, WRITING.prompts[s.pi]) : null; r.bad = f ? f.out.filter(x => x.lv === 'bad').length : null; r.warn = f ? f.out.filter(x => x.lv === 'warn').length : null; }
     if (s.type === 'speak') { if (ui.spk.phase === 'talk') spkStop(); const n = ui.spk.final.trim() ? ui.spk.final.trim().split(/\s+/).length : 0; r.words = n; r.part = s.part; r.secs = ui.spk.t1 && ui.spk.t0 ? Math.round((ui.spk.t1 - ui.spk.t0) / 1000) : 0; spkReset(); }

@@ -11,6 +11,7 @@
   .lq li:first-child{border-top:0;padding-top:0}
   .lq .qt{font-family:var(--f-word);font-size:16.5px}
   .lq input{font-family:var(--f-word);font-size:17px;max-width:280px}
+  .maprow{grid-template-columns:repeat(auto-fill,minmax(54px,1fr))!important}.maprow .opt{text-align:center}
   .lq .ok{color:var(--good);font-weight:700} .lq .ng{color:var(--bad);font-weight:700}
   .pairbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .pairbtns .opt{text-align:center;font-family:var(--f-word);font-size:26px;padding:20px}
@@ -67,10 +68,11 @@
     </section>
     <section class="sheet panel">
       <b>Questions 1–${T.qs.length}</b>
+      ${T.map ? mapSVG(T.map) : ''}${T.choicesNote ? `<div class="small" style="background:var(--sunk);border-radius:8px;padding:8px 12px;font-family:var(--f-word)">${T.choicesNote.split('|').map(esc).join('<br>')}</div>` : ''}
       <ol class="lq">${T.qs.map((q, i) => {
         const a = L.ans[i] ?? '', right = L.checked && isRight(q, a);
-        const res = L.checked ? `<span class="${right ? 'ok' : 'ng'}">${right ? '✓ 正解' : `× 正解：${esc(q[0] === 'mc' ? q[3].split('|').find(o => o.startsWith(q[2])) : q[2].split('/')[0])}`}</span>` : '';
-        if (q[0] === 'mc') return `<li><span class="qt">${i + 1}. ${esc(q[1])}</span><div class="opts">${q[3].split('|').map(o => { const k = o[0]; let c = 'opt'; if (L.checked && k === q[2]) c += ' ok'; else if (L.checked && k === a) c += ' ng';
+        const res = L.checked ? `<span class="${right ? 'ok' : 'ng'}">${right ? '✓ 正解' : `× 正解：${esc(q[0] !== 'gap' ? ((q[3] || T.choices).split('|').find(o => o.startsWith(q[2])) || q[2]) : q[2].split('/')[0])}`}</span>` : '';
+        if (q[0] !== 'gap') return `<li><span class="qt">${i + 1}. ${esc(q[1])}</span><div class="opts${q[0] === 'map' ? ' maprow' : ''}">${(q[3] || T.choices).split('|').map(o => { const k = o[0]; let c = 'opt'; if (L.checked && k === q[2]) c += ' ok'; else if (L.checked && k === a) c += ' ng';
           return `<button class="${c}" data-act="lans" data-q="${i}" data-v="${k}" aria-pressed="${a === k}" ${L.checked ? 'disabled' : ''} style="${a === k && !L.checked ? 'border-color:var(--accent);background:var(--accent-soft)' : ''}">${esc(o)}</button>`; }).join('')}</div>${res}</li>`;
         return `<li><span class="qt">${i + 1}. ${esc(q[1])}</span><input type="text" class="lgap" data-q="${i}" value="${esc(a)}" autocomplete="off" spellcheck="false" ${L.checked ? 'disabled' : ''} aria-label="問${i + 1}の答え">${res}</li>`;
       }).join('')}</ol>
@@ -83,9 +85,18 @@
         : '<p class="small muted">答え合わせの後に、スクリプトを見ながらもう一度聞くのがおすすめです（わからない単語はタップで意味が出ます）。</p>'}
     </section>`;
   }
+  function mapSVG(m) {
+    const cols = {road: 'var(--line)', water: 'var(--c3)', green: 'var(--good-soft)', bld: 'var(--surface)'};
+    return `<div class="chartbox"><svg viewBox="0 0 ${m.w} ${m.h}" role="img" aria-label="地図">
+      ${m.shapes.map(s => `<rect x="${s[1]}" y="${s[2]}" width="${s[3]}" height="${s[4]}" rx="4" fill="${cols[s[0]]}" ${s[0] === 'bld' ? 'stroke="var(--muted)"' : ''} opacity="${s[0] === 'water' ? .35 : 1}"/>`).join('')}
+      ${m.labels.map(l => `<text x="${l[1]}" y="${l[2]}" text-anchor="middle" style="font-size:11px;fill:var(--ink)">${esc(l[0])}</text>`).join('')}
+      ${m.letters.map(l => `<circle cx="${l[1]}" cy="${l[2]}" r="11" fill="var(--accent)"/><text x="${l[1]}" y="${l[2] + 4}" text-anchor="middle" style="font-size:12px;font-weight:700;fill:var(--on-accent)">${l[0]}</text>`).join('')}
+      ${m.you ? `<text x="${m.you[0]}" y="${m.you[1]}" text-anchor="middle" style="font-size:11px;font-weight:700;fill:var(--bad)">★ You are here</text>` : ''}
+    </svg></div>`;
+  }
   function isRight(q, a) {
     if (a == null || a === '') return false;
-    if (q[0] === 'mc') return a === q[2];
+    if (q[0] !== 'gap') return a === q[2];
     return q[2].split('/').some(x => nz(x) === nz(a));
   }
   Object.assign(ACT, {

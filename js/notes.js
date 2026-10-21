@@ -22,7 +22,7 @@
   S.missed = S.missed || {read: [], listen: [], write: {}};
   const RD = () => window.READING || [], LS = () => window.LISTENING || [];
   const nz = x => String(x ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const lisRight = (q, a) => a != null && a !== '' && (q[0] === 'mc' ? a === q[2] : q[2].split('/').some(x => nz(x) === nz(a)));
+  const lisRight = (q, a) => a != null && a !== '' && (q[0] !== 'gap' ? a === q[2] : q[2].split('/').some(x => nz(x) === nz(a)));
 
   /* ---------- recording: reading & listening questions, writing errors ---------- */
   function record(kind, id, qs, right) {
@@ -31,7 +31,7 @@
     S.missed[kind] = list.slice(-200); save();
   }
   const prevR = ACT.rcheck, prevL = ACT.lcheck;
-  ACT.rcheck = (...a) => { const r = prevR(...a); const P0 = RD()[ui.read.i]; record('read', P0.id, P0.qs, P0.qs.map((q, i) => ui.read.ans[i] === q[1])); return r; };
+  ACT.rcheck = (...a) => { const r = prevR(...a); const P0 = RD()[ui.read.i], F = READ_FLAT(P0); record('read', P0.id, F, F.map(q => q.ok(ui.read.ans[q.n]))); return r; };
   ACT.lcheck = (...a) => { const r = prevL(...a); const T = LS()[ui.lis.i]; record('listen', T.id, T.qs, T.qs.map((q, i) => lisRight(q, ui.lis.ans[i]))); return r; };
   const prevAnalyze = analyzeWriting;
   analyzeWriting = function (raw, p) {
@@ -54,7 +54,7 @@
     const errs = J.ERRS.filter(e => { const p = S.jprog?.errs?.[e.wrong]; return p && p.ng > 0 && p.ng >= p.ok; });
     const wasei = J.WASEI.filter(w => { const p = S.jprog?.wasei?.[w.kata]; return p && p.ng > 0 && p.ng >= p.ok; });
     const sounds = Object.entries(S.jprog?.pairs || {}).map(([s, r]) => [s, r.ok / (r.ok + r.ng), r.ok + r.ng]).filter(([, pc, n]) => n >= 3 && pc < 0.8).sort((a, b) => a[1] - b[1]);
-    const read = S.missed.read.map(m => { const P0 = RD().find(r => r.id === m.id); return P0 && {...m, P0, q: P0.qs[m.qi]}; }).filter(Boolean);
+    const read = S.missed.read.map(m => { const P0 = RD().find(r => r.id === m.id); const q = P0 && READ_FLAT(P0)[m.qi]; return q && {...m, P0, q}; }).filter(Boolean);
     const listen = S.missed.listen.map(m => { const T = LS().find(r => r.id === m.id); return T && {...m, T, q: T.qs[m.qi]}; }).filter(Boolean);
     const write = Object.entries(S.missed.write).sort((a, b) => b[1] - a[1]).slice(0, 12);
     return {words, sents, idioms, errs, wasei, sounds, read, listen, write};
@@ -77,8 +77,8 @@
       <div class="row"><button class="btn primary" data-act="nsent" data-m="trans">和文英訳で練習</button><button class="btn" data-act="nsent" data-m="order">並べ替えで練習</button></div>`) : ''}
     ${c.idioms.length ? sec('idioms', 'イディオム・前置詞', c.idioms.length, `<div class="plist">${c.idioms.slice(0, 30).map(i => `<div class="pitem"><button class="iconbtn" data-act="say" data-text="${esc(i.plain)}" aria-label="再生">${ICON.speak}</button><div><span class="pat">${esc(i.phrase)}</span><div class="en">${esc(i.plain)}</div><div class="jp">${esc(i.ja)}</div></div></div>`).join('')}</div>
       <div class="row"><button class="btn primary" data-act="nidiom" ${c.idioms.length < 1 ? 'disabled' : ''}>この表現でテスト</button></div>`) : ''}
-    ${c.read.length ? sec('read', '読解で間違えた問題', c.read.length, c.read.slice(-20).reverse().map(m => `<div class="nq"><span class="w">${esc(m.P0.title)} · 問${m.qi + 1}</span><span class="q">${esc(m.q[0])}</span><span class="a">正解：<b>${LBL[m.q[1]]}</b> — ${esc(m.q[2])}</span></div>`).join('') + `<div class="row"><button class="btn" data-act="nread" data-id="${esc(c.read[c.read.length - 1].id)}">最後に間違えた文章を解き直す</button></div>`) : ''}
-    ${c.listen.length ? sec('listen', 'リスニングで間違えた問題', c.listen.length, c.listen.slice(-20).reverse().map(m => `<div class="nq"><span class="w">Section ${m.T.section}：${esc(m.T.title)} · 問${m.qi + 1}</span><span class="q">${esc(m.q[1])}</span><span class="a">正解：<b>${esc(m.q[0] === 'mc' ? m.q[3].split('|').find(o => o.startsWith(m.q[2])) : m.q[2].split('/')[0])}</b></span></div>`).join('') + `<div class="row"><button class="btn" data-act="nlisten" data-id="${esc(c.listen[c.listen.length - 1].id)}">最後に間違えたセクションを解き直す</button></div>`) : ''}
+    ${c.read.length ? sec('read', '読解で間違えた問題', c.read.length, c.read.slice(-20).reverse().map(m => `<div class="nq"><span class="w">${esc(m.P0.title)} · 問${m.qi + 1}</span><span class="q">${esc(m.q.prompt)}</span><span class="a">正解：<b>${esc(m.q.answerText)}</b>${m.q.why ? ` — ${esc(m.q.why)}` : ''}</span></div>`).join('') + `<div class="row"><button class="btn" data-act="nread" data-id="${esc(c.read[c.read.length - 1].id)}">最後に間違えた文章を解き直す</button></div>`) : ''}
+    ${c.listen.length ? sec('listen', 'リスニングで間違えた問題', c.listen.length, c.listen.slice(-20).reverse().map(m => `<div class="nq"><span class="w">Section ${m.T.section}：${esc(m.T.title)} · 問${m.qi + 1}</span><span class="q">${esc(m.q[1])}</span><span class="a">正解：<b>${esc(m.q[0] !== 'gap' ? ((m.q[3] || m.T.choices || '').split('|').find(o => o.startsWith(m.q[2])) || m.q[2]) : m.q[2].split('/')[0])}</b></span></div>`).join('') + `<div class="row"><button class="btn" data-act="nlisten" data-id="${esc(c.listen[c.listen.length - 1].id)}">最後に間違えたセクションを解き直す</button></div>`) : ''}
     ${c.errs.length || c.wasei.length || c.sounds.length ? sec('errs', '日本人の弱点', c.errs.length + c.wasei.length, `
       ${c.sounds.length ? `<div><span class="small muted">聞き分けが苦手な音</span><div class="weak" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">${c.sounds.map(([s, pc, n]) => `<span class="tag">${esc(s)} ${Math.round(pc * 100)}%（${n}回）</span>`).join('')}</div></div>` : ''}
       ${c.errs.map(e => `<div class="nq"><span class="q" style="color:var(--bad);text-decoration:line-through">${esc(e.wrong)}</span><span class="q" style="color:var(--good)">${esc(e.alts[0])}</span><span class="w">${esc(e.why)}</span></div>`).join('')}

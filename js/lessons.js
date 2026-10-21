@@ -51,7 +51,7 @@
       const [q, opts, ans, why] = b.q, a = ui.lesson.ans[k];
       return `<div class="lq"><b>確認問題</b><span>${esc(q)}</span><div class="opts">${opts.map((o, i) => {
         let c = 'opt' + (/[a-z]/i.test(o) ? ' en' : ''); if (a != null && i === ans) c += ' ok'; else if (a === i) c += ' ng';
-        return `<button class="${c}" data-act="lans" data-k="${k}" data-i="${i}" ${a != null ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div>
+        return `<button class="${c}" data-act="lqans" data-k="${k}" data-i="${i}" ${a != null ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div>
         ${a != null ? `<span class="small">${a === ans ? '<b style="color:var(--good)">正解。</b>' : '<b style="color:var(--bad)">不正解。</b>'} ${esc(why)}</span>` : ''}</div>`;
     }
     if (b.go) return `<div><button class="btn" data-act="lgo" data-tab="${b.go[0]}" data-x="${esc(b.go[2] || '')}">${esc(b.go[1])} →</button></div>`;
@@ -73,7 +73,7 @@
   Object.assign(ACT, {
     lopen: d => { ui.lesson = {open: d.id, ans: {}}; render(); scrollTo({top: 0}); },
     lclose: () => { ui.lesson.open = null; render(); },
-    lans: d => {
+    lqans: d => {
       const l = L.find(x => x.id === ui.lesson.open); ui.lesson.ans[+d.k] = +d.i;
       const qs = l.blocks.map((b, k) => b.q ? k : -1).filter(k => k >= 0);
       if (qs.every(k => ui.lesson.ans[k] != null)) { S.lessonDone[l.id] = Date.now(); window.addXP?.(5, 'lesson'); save(); }

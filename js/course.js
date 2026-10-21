@@ -91,50 +91,62 @@
   }
 
   /* ---------- shared runner: mc / write / order ---------- */
-  function startRun(title, qs, onDone) { ui.cs.run = {title, qs, i: 0, res: [], onDone}; window.SFX?.reset(); render(); scrollTo(0, 0); }
+  // lesson runner (focus mode): top bar with close + progress, big question, bottom feedback sheet, completion screen
+  function startRun(title, qs, onDone, opt = {}) { ui.cs.run = {title, qs, i: 0, res: [], onDone, t0: Date.now(), streak: 0, best: 0, from: opt.from || null}; window.SFX?.reset(); render(); scrollTo(0, 0); }
+  window.COURSE_RUN = startRun;
+  const sheet = (ok, title, body, label = '続ける') => `<div class="lsn-sheet ${ok === true ? 'ok' : ok === false ? 'ng' : 'mid'}"><div class="lsn-sheet-in"><div class="lsn-verdict">${ok === true ? '✓ ' : ok === false ? '✕ ' : ''}${title}</div>${body}<button class="lsn-cta" data-act="crnext">${label}</button></div></div>`;
   function runView() {
     const r = ui.cs.run, q = r.qs[r.i], res = r.res[r.i], n = r.qs.length;
     if (r.i >= n) return runResult();
-    let body = '', after = '';
+    const last = r.i === n - 1, next = last ? '結果を見る' : '続ける';
+    let body = '', fb = '', foot = '';
     if (q.type === 'mc') {
-      body = `${q.lead ? `<div class="small muted">${q.lead}</div>` : ''}<div class="vq">${q.prompt}</div><div class="opts">${q.opts.map((o, j) => `<button class="opt ${q.ja ? '' : 'en'} ${res ? (o === q.ans ? 'ok' : j === res.pick ? 'ng' : '') : ''}" data-act="crpick" data-i="${j}" ${res ? 'disabled' : ''}>${esc(o)}</button>`).join('')}</div>`;
-      if (res) after = `<div class="verdict ${res.ok ? 'up' : 'dn'}">${res.ok ? '正解！' : '不正解'}</div><div class="small">${q.why ? esc(q.why) : ''}</div>${q.full ? `<div class="row"><span class="ex" style="font-size:16px">${esc(q.full)}</span>${sayBtn(q.full, '聞く')}</div>` : ''}`;
+      body = `${q.lead ? `<div class="lsn-lead">${q.lead}</div>` : ''}${q.prompt ? `<div class="lsn-q">${q.prompt}</div>` : ''}<div class="lsn-opts">${q.opts.map((o, j) => `<button class="lsn-opt ${q.ja ? '' : 'en'} ${res ? (o === q.ans ? 'ok' : j === res.pick ? 'ng' : 'dim') : ''}" data-act="crpick" data-i="${j}" ${res ? 'disabled' : ''}><span class="k">${j + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+      if (res) fb = sheet(res.ok, res.ok ? pick(['正解！', 'すばらしい！', 'その調子！', 'カンペキ！']) : '正解は…', `${res.ok ? '' : `<div class="lsn-ans">${esc(q.ans)}</div>`}${q.full ? `<div class="lsn-full"><span class="ex">${esc(q.full)}</span>${sayBtn(q.full, '')}</div>` : ''}${q.why ? `<div class="lsn-why">${esc(q.why)}</div>` : ''}`, next);
     } else if (q.type === 'write') {
-      body = `<div class="small muted">日本語の意味になるように英語で書いてください${q.hint ? `（${esc(q.hint)}）` : ''}</div><div class="vq" style="font-family:var(--f-ui);font-weight:800">${esc(q.ja)}</div>
-        <form data-form="crwrite"><textarea id="crin" rows="2" class="dinput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="英文を入力" ${res ? 'readonly' : ''}>${esc(res?.typed || '')}</textarea></form>`;
+      body = `<div class="lsn-lead">英語にしてください${q.hint ? `<span class="muted">（${esc(q.hint)}）</span>` : ''}</div><div class="lsn-q" style="font-family:var(--f-ui);font-weight:800">${esc(q.ja)}</div>
+        <form data-form="crwrite"><textarea id="crin" rows="3" class="lsn-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ここに英語で入力" ${res ? 'readonly' : ''}>${esc(res?.typed || '')}</textarea></form>`;
       if (res) {
         const d = res.chk.diff;
-        after = `<div class="verdict ${res.ok ? 'up' : res.chk.near ? '' : 'dn'}">${res.ok ? (res.chk.exact ? '正解！' : 'ほぼ正解！') : res.chk.near ? 'おしい！' : 'もう一歩'}</div>
-          <div class="small muted">模範解答</div><div class="row"><span class="ex" style="font-size:17px">${esc(q.model)}</span>${sayBtn(q.model, '聞く')}</div>
-          ${!res.chk.exact && d ? `<div class="small muted">あなたの答えとの比較（緑＝一致、赤＝足りない語、取り消し線＝余分な語）</div><div class="dres" style="font-size:16px">${d.A.map((w, i) => `<span class="${d.mHit[i] ? 'hit' : 'miss'}">${esc(w)}</span>`).join(' ')}${d.B.some((_, k) => !d.bHit[k]) ? ' ／ ' + d.B.map((b, k) => d.bHit[k] ? '' : `<span class="extra">${esc(b)}</span>`).join(' ') : ''}</div>` : ''}
-          ${q.alts?.length ? `<div class="small">ほかの正解例：${q.alts.map(a => `<span style="font-family:var(--f-word)">${esc(a)}</span>`).join(' ／ ')}</div>` : ''}
-          ${!res.ok ? `<div class="row"><button class="btn ghost" data-act="crself">自分の答えも正しいと思う（正解にする）</button></div>` : ''}`;
-      }
+        fb = sheet(res.ok ? true : res.chk.near ? null : false, res.ok ? (res.chk.exact ? '正解！' : 'ほぼ正解！') : res.chk.near ? 'おしい！' : '模範解答はこちら',
+          `<div class="lsn-full"><span class="ex">${esc(q.model)}</span>${sayBtn(q.model, '')}</div>
+          ${!res.chk.exact && d ? `<div class="dres" style="font-size:15px">${d.A.map((w, i) => `<span class="${d.mHit[i] ? 'hit' : 'miss'}">${esc(w)}</span>`).join(' ')}${d.B.some((_, k) => !d.bHit[k]) ? ' ／ ' + d.B.map((b, k) => d.bHit[k] ? '' : `<span class="extra">${esc(b)}</span>`).join(' ') : ''}</div>` : ''}
+          ${q.alts?.length ? `<div class="lsn-why">ほかの正解例：${q.alts.map(esc).join(' ／ ')}</div>` : ''}
+          ${!res.ok ? `<button class="lsn-link" data-act="crself">自分の答えも正しい（正解にする）</button>` : ''}`, next);
+      } else foot = `<button class="lsn-cta" data-act="crwrite">チェック</button>`;
     } else if (q.type === 'order') {
       const picked = r.pick || [];
-      body = `<div class="small muted">単語をタップして正しい順に並べてください（${esc(q.ja)}）</div>
-        <div class="ordbox">${picked.map((k, j) => `<button class="ordchip" data-act="crunpick" data-j="${j}" ${res ? 'disabled' : ''}>${esc(q.tokens[k])}</button>`).join('') || '<span class="small muted">ここに並びます</span>'}</div>
-        <div class="row" style="gap:6px">${q.tokens.map((t, k) => `<button class="ordchip ${picked.includes(k) ? 'used' : ''}" data-act="crord" data-k="${k}" ${res ? 'disabled' : ''}>${esc(t)}</button>`).join('')}</div>`;
-      if (res) after = `<div class="verdict ${res.ok ? 'up' : 'dn'}">${res.ok ? '正解！' : '不正解'}</div><div class="row"><span class="ex" style="font-size:17px">${esc(q.full)}</span>${sayBtn(q.full, '聞く')}</div>`;
+      body = `<div class="lsn-lead">正しい順に並べてください</div><div class="lsn-q" style="font-family:var(--f-ui);font-size:17px">${esc(q.ja)}</div>
+        <div class="ordbox lsn-ord">${picked.map((k, j) => `<button class="ordchip" data-act="crunpick" data-j="${j}" ${res ? 'disabled' : ''}>${esc(q.tokens[k])}</button>`).join('')}</div>
+        <div class="lsn-bank">${q.tokens.map((t, k) => `<button class="ordchip ${picked.includes(k) ? 'used' : ''}" data-act="crord" data-k="${k}" ${res ? 'disabled' : ''}>${esc(t)}</button>`).join('')}</div>`;
+      if (res) fb = sheet(res.ok, res.ok ? '正解！' : '正しい順番は…', `<div class="lsn-full"><span class="ex">${esc(q.full)}</span>${sayBtn(q.full, '')}</div>`, next);
+      else foot = `<button class="lsn-cta" data-act="crordcheck" ${picked.length === q.tokens.length ? '' : 'disabled'}>チェック</button>`;
     }
-    const can = q.type === 'mc' ? '' : res ? '' : q.type === 'write' ? `<button class="btn primary" data-act="crwrite">答え合わせ</button>` : `<button class="btn primary" data-act="crordcheck" ${(r.pick || []).length === q.tokens.length ? '' : 'disabled'}>答え合わせ</button><button class="btn ghost" data-act="crordreset">やり直す</button>`;
-    return `<div class="sheet panel">
-      <div class="thead"><b>${esc(r.title)}</b><span class="small muted">${r.i + 1} / ${n}</span></div>
-      <div class="meter"><i style="width:${(r.i + (res ? 1 : 0)) / n * 100}%"></i></div>
-      ${q.tag ? `<span class="tsec" style="align-self:flex-start">${esc(q.tag)}</span>` : ''}
-      ${body}${after ? `<div class="panel" style="gap:8px">${after}</div>` : ''}
-      <div class="row">${can}${res ? `<button class="btn primary" data-act="crnext">${r.i === n - 1 ? '結果を見る' : '次へ'}</button>` : ''}<button class="btn ghost" data-act="crquit">やめる</button></div>
+    return `<div class="lesson">
+      <div class="lsn-top"><button class="lsn-x" data-act="crquit" aria-label="やめる">✕</button><div class="lsn-bar"><i style="width:${(r.i + (res ? 1 : 0)) / n * 100}%"></i></div>${r.streak >= 2 ? `<span class="lsn-streak">🔥${r.streak}</span>` : `<span class="lsn-count">${r.i + 1}/${n}</span>`}</div>
+      ${r.streak >= 3 && res?.ok ? `<div class="lsn-combo">${r.streak}問連続正解！</div>` : ''}
+      ${q.tag ? `<span class="lsn-tag">${esc(q.tag)}</span>` : ''}
+      <div class="lsn-body">${body}</div>
+      ${fb || (foot ? `<div class="lsn-foot">${foot}</div>` : '')}
     </div>`;
   }
   function runResult() {
-    const r = ui.cs.run, ok = r.res.filter(x => x?.ok).length, p = Math.round(ok / r.qs.length * 100);
-    if (!r.reported) { r.reported = true; r.onDone?.(p); p === 100 ? window.SFX?.fanfare(true) : p >= 80 ? window.SFX?.fanfare(false) : window.SFX?.pop(); }
-    return `<div class="sheet panel" style="gap:12px;text-align:center;align-items:center">
-      <div class="small muted">${esc(r.title)}</div>
-      <div style="font-family:var(--f-word);font-size:56px;font-weight:800;line-height:1" class="${p >= 80 ? 'up' : p < 50 ? 'dn' : ''}">${p}<small style="font-size:20px">点</small></div>
-      <div>${ok} / ${r.qs.length} 問正解 ${p >= 80 ? '・ 合格ライン（80点）クリア！' : '・ 80点で合格です'}</div>
-      ${r.qs.some((q, i) => !r.res[i]?.ok) ? `<div class="panel" style="gap:6px;text-align:left;width:100%"><b>見直し</b>${r.qs.map((q, i) => r.res[i]?.ok ? '' : `<div class="small" style="border-top:1px dashed var(--line);padding-top:6px">${q.type === 'write' ? esc(q.ja) + ' → <b class="en" style="font-family:var(--f-word)">' + esc(q.model) + '</b>' : q.type === 'order' ? '<b style="font-family:var(--f-word)">' + esc(q.full) + '</b>' : q.prompt + ' → <b>' + esc(q.ans) + '</b>'}${q.why ? `<div class="muted">${esc(q.why)}</div>` : ''}</div>`).join('')}</div>` : ''}
-      <div class="row" style="justify-content:center"><button class="btn primary" data-act="crclose">もどる</button><button class="btn" data-act="crretry">もう一度</button></div>
+    const r = ui.cs.run, ok = r.res.filter(x => x?.ok).length, n = r.qs.length, p = Math.round(ok / n * 100);
+    if (!r.reported) { r.reported = true; r.onDone?.(p); r.bonus = p >= 80 ? 10 : 5; window.addXP?.(r.bonus, 'lesson'); r.secs = Math.round((Date.now() - r.t0) / 1000); window.dispatchEvent(new CustomEvent('lessondone', {detail: {p, title: r.title}})); p === 100 ? window.SFX?.fanfare(true) : p >= 80 ? window.SFX?.fanfare(false) : window.SFX?.pop(); }
+    const today = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+    const xpToday = S.log?.[today]?.xp || 0, goal = S.goal || 50;
+    const head = p === 100 ? 'パーフェクト！' : p >= 80 ? 'レッスン完了！' : 'おつかれさま！';
+    const missed = r.qs.map((q, i) => [q, i]).filter(([, i]) => !r.res[i]?.ok);
+    return `<div class="lesson done">
+      <div class="lsn-done">
+        <div class="lsn-trophy">${p === 100 ? '🏆' : p >= 80 ? '🎉' : '💪'}</div>
+        <h2>${head}</h2><p class="muted">${esc(r.title)}</p>
+        <div class="lsn-stats"><div class="st-xp"><span>獲得XP</span><b>+${ok + r.bonus}</b></div><div class="st-acc"><span>正答率</span><b>${p}%</b></div><div class="st-time"><span>タイム</span><b>${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, '0')}</b></div></div>
+        <div class="lsn-goal"><span>今日の目標</span><div class="lsn-bar"><i style="width:${Math.min(100, xpToday / goal * 100)}%"></i></div><b>${xpToday} / ${goal} XP</b></div>
+        ${p < 80 ? `<p class="small">80%以上で合格です。間違えた問題をもう一度やってみましょう。</p>` : ''}
+        ${missed.length ? `<details class="lsn-review"><summary>間違えた問題を見直す（${missed.length}）</summary>${missed.map(([q]) => `<div>${q.type === 'write' ? esc(q.ja) + ' → <b>' + esc(q.model) + '</b>' : q.type === 'order' ? '<b>' + esc(q.full) + '</b>' : (q.prompt || esc(q.lead || '')) + ' → <b>' + esc(q.ans) + '</b>'}${q.why ? `<div class="muted">${esc(q.why)}</div>` : ''}</div>`).join('')}</details>` : ''}
+      </div>
+      <div class="lsn-foot"><button class="lsn-cta" data-act="crclose">続ける</button>${p < 100 ? `<button class="lsn-link" data-act="crretry">もう一度挑戦する</button>` : ''}</div>
     </div>`;
   }
 
@@ -229,7 +241,7 @@
 
   /* ---------- actions ---------- */
   const R = () => ui.cs.run;
-  function record(ok) { const r = R(); if (ok) XP(1); sfx(ok); render(); }
+  function record(ok) { const r = R(); if (ok) { XP(1); r.streak = (r.streak || 0) + 1; r.best = Math.max(r.best || 0, r.streak); } else r.streak = 0; sfx(ok); render(); }
   Object.assign(ACT, {
     cslv: x => { ui.cs.lv = x.l; ui.cs.wunit = null; render(); },
     csseg: x => { ui.cs.seg = x.k; ui.cs.wunit = null; render(); },
@@ -258,9 +270,9 @@
     crordreset: () => { R().pick = []; render(); },
     crordcheck: () => { const r = R(), q = r.qs[r.i], ok = r.pick.map(k => q.tokens[k]).join(' ') === q.answer; r.res[r.i] = {ok}; record(ok); },
     crnext: () => { const r = R(); r.i++; r.pick = []; render(); setTimeout(() => $('#crin')?.focus(), 50); },
-    crquit: () => { ui.cs.run = null; render(); },
-    crclose: () => { ui.cs.run = null; render(); scrollTo(0, 0); },
-    crretry: () => { const r = R(); startRun(r.title, r.qs.map(q => q.type === 'mc' ? {...q, opts: shuffle(q.opts)} : q.type === 'order' ? {...q, tokens: shuffle(q.tokens)} : q), r.onDone); },
+    crquit: () => { const r = ui.cs.run; if (r && r.i > 0 && r.i < r.qs.length && !confirm('レッスンをやめますか？（進み具合は保存されません）')) return; const from = r?.from; ui.cs.run = null; if (from) ACT.tab({tab: from}); else render(); },
+    crclose: () => { const from = ui.cs.run?.from; ui.cs.run = null; if (from) { ACT.tab({tab: from}); window.PATH_FOCUS?.(); } else render(); scrollTo(0, 0); },
+    crretry: () => { const r = R(); const from = r.from; startRun(r.title, r.qs.map(q => q.type === 'mc' ? {...q, opts: shuffle(q.opts)} : q.type === 'order' ? {...q, tokens: shuffle(q.tokens)} : q), r.onDone, {from}); },
   });
   document.addEventListener('submit', e => { if (e.target.dataset?.form === 'crwrite') { e.preventDefault(); ACT.crwrite(); } });
   document.addEventListener('keydown', e => {

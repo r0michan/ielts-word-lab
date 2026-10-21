@@ -67,6 +67,7 @@
 
   const streak = () => { let n = 0; const d = new Date(), k = () => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; if (!S.log?.[k()]?.xp) d.setDate(d.getDate() - 1); while (S.log?.[k()]?.xp) { n++; d.setDate(d.getDate() - 1); } return n; };
   renderTabs = function () {
+    document.documentElement.classList.toggle('focus', S.tab === 'course' && !!ui.cs?.run);
     const tab = S.tab, dest = destOf(tab), top = isTop(tab);
     const title = top ? (tab === 'home' ? '' : DEST.find(d => d[0] === dest)[1]) : labelOf(tab);
     const sk = streak();
@@ -134,12 +135,14 @@
   function vHome() {
     if (ui.place) return baseHome();
     const p = homeParts();
-    return `${greet()}${html(p.hero)}${html(p.today)}<div class="hgrid">${html(p.ring)}${html(p.exam)}</div>${html(p.other)}
-      <button class="morelink" data-act="tab" data-tab="hub-record">学習の記録・弱点レーダー・バッジを見る ${IC.chevron}</button>`;
+    if (!window.PATH) return `${greet()}${html(p.hero)}${html(p.today)}<div class="hgrid">${html(p.ring)}${html(p.exam)}</div>${html(p.other)}`;
+    return `${PATH.stats()}${html(p.hero)}${PATH.quests()}${PATH.path()}${html(p.other)}
+      <button class="morelink" data-act="tab" data-tab="hub-record">今日のおすすめ・試験日の設定・弱点レーダー・バッジ ${IC.chevron}</button>`;
   }
   function recordExtras() {
     const p = homeParts();
-    return `<section class="hubgroup"><h2 class="gtitle">学習の記録</h2><div class="panel">${html(p.record)}</div></section>
+    return `<section class="hubgroup"><h2 class="gtitle">今日のおすすめと目標</h2><div class="panel">${html(p.today)}<div class="hgrid">${html(p.ring)}${html(p.exam)}</div></div></section>
+      <section class="hubgroup"><h2 class="gtitle">学習の記録</h2><div class="panel">${html(p.record)}</div></section>
       <p class="note">音声認識・録音は Chrome / Edge / Safari で動きます（音声認識にはインターネット接続が必要）。発音スコアと添削チェックは自動判定の目安で、IELTS の公式採点ではありません。</p>`;
   }
 

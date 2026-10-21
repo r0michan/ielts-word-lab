@@ -315,6 +315,11 @@ textarea{width:100%;min-height:130px;font-family:var(--f-word);font-size:14px}
 <script src="data/japan.js"></script>
 <script src="data/more-practice.js"></script>
 <script src="data/lessons.js"></script>
+<script src="data/models-t1.js"></script>
+<script src="data/models-t2a.js"></script>
+<script src="data/models-t2b.js"></script>
+<script src="data/models-apply.js"></script>
+<script src="data/speaking-models.js"></script>
 <script>
 const LEVELS = ['A1','A2','B1','B2','C1','C2'];
 const LEVEL_INFO = {
@@ -918,7 +923,7 @@ function vWrite() {
         <button class="btn" data-act="wscaffold">型を挿入</button>
         ${p.model ? `<button class="btn" data-act="wmodel">${w.showModel ? 'お手本を閉じる' : 'お手本を見る'}</button>` : ''}
       </div>
-      ${w.showModel && p.model ? `<div class="sheet panel"><div class="row" style="justify-content:space-between"><b>お手本（バンド7以上を目指した例）</b>${sayBtn(p.model, '読み上げ')}</div><div class="model">${esc(p.model)}</div></div>` : ''}
+      ${w.showModel && p.model ? `<div class="sheet panel"><div class="row" style="justify-content:space-between"><b>お手本（バンド7以上を目指した例）</b>${sayBtn(p.model, '読み上げ')}</div><div class="model">${esc(p.model)}</div>${p.points ? `<div class="ltip" style="background:var(--accent-soft);border-radius:10px;padding:10px 14px;font-size:14px"><b>このお手本のポイント</b><ul style="margin:6px 0 0;padding-left:18px">${p.points.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}</div>` : ''}
       <textarea id="essay" spellcheck="true" placeholder="ここに書きます。「型を挿入」で段落の組み立てと書き出しが入ります。右の表現をクリックするとカーソル位置に挿入されます。">${esc(text)}</textarea>
       <div class="wstat" id="wstat"></div>
       <div class="row">
@@ -1223,7 +1228,8 @@ function vSpeak() {
   return `<div class="row"><div class="seg" role="group" aria-label="パート">${parts}</div><span class="muted small">${part.name}</span></div>
   <div class="sheet panel">
     <div class="cue">${esc(q.q)}${q.b ? `<div class="small muted" style="font-family:var(--f-ui);margin-top:6px">You should say:</div><ul>${q.b.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>
-    <div class="row">${sayBtn(q.q, '質問を聞く')}</div>
+    <div class="row">${sayBtn(q.q, '質問を聞く')}${window.SPEAK_MODELS?.[q.q] ? `<button class="btn ghost" data-act="smodel">${s.modelFor === s.qi ? '回答例を閉じる' : '回答例を見る'}</button>` : ''}</div>
+    ${s.modelFor === s.qi && window.SPEAK_MODELS?.[q.q] ? `<div class="sheet panel" style="gap:8px;background:var(--sunk)"><div class="row" style="justify-content:space-between"><b class="small">回答例（バンド7程度）</b><div class="row">${sayBtn(SPEAK_MODELS[q.q], '聞く')}${sayBtn(SPEAK_MODELS[q.q], 'ゆっくり', true)}</div></div><div class="model" style="white-space:pre-line">${esc(SPEAK_MODELS[q.q])}</div><span class="small muted">まず聞いて、次に文を見ながら一緒に読み（オーバーラッピング）、最後に見ないで真似する（シャドーイング）と、構文が口から出るようになります。丸暗記ではなく、自分の経験に置き換えて話しましょう。</span></div>` : ''}
     ${ctl}
     ${!SR ? '<p class="err">このブラウザは音声認識に対応していません。Chrome か Edge で開いてください。</p>' : ''}
     ${s.err ? `<p class="err">${esc(s.err)}</p>` : ''}
@@ -1441,6 +1447,7 @@ const ACT = {
   spart: d => { spkReset(); ui.spk.part = +d.p; const qs = SPEAK_Q.map((q, i) => [q, i]).filter(([q]) => q.p === +d.p); ui.spk.qi = pick(qs)[1]; render(); },
   snew: () => { spkReset(); const qs = SPEAK_Q.map((q, i) => [q, i]).filter(([q, i]) => q.p === ui.spk.part && i !== ui.spk.qi); ui.spk.qi = pick(qs)[1]; render(); },
   sretry: () => { spkReset(); render(); },
+  smodel: () => { ui.spk.modelFor = ui.spk.modelFor === ui.spk.qi ? null : ui.spk.qi; render(); },
   sprep: () => spkPrep(),
   stalk: () => spkTalk(),
   sstop: () => spkStop(),

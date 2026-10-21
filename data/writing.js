@@ -52,7 +52,7 @@ Overall, internet access rose considerably in all three countries. Japan had the
 
 In 2000, 30% of Japanese households were connected to the internet, compared with 16% in Germany and only 3% in Brazil. Over the next ten years, the figures for Japan and Germany rose sharply, reaching 78% and 77% respectively in 2010. After that, growth slowed, and by 2020 almost all homes in both countries had access, at 95% and 93%.
 
-Brazil followed a different pattern. Its figure increased only slightly to 14% by 2005, but then climbed rapidly to 40% in 2010 and 58% in 2015. By the end of the period, 80% of Brazilian households were online, although this was still around 15 percentage points lower than the figure for Japan.`},
+Brazil followed a different pattern. Its figure increased only slightly to 14% by 2005, but then climbed rapidly to 40% in 2010 and 58% in 2015. By the end of the period, 80% of Brazilian households were online, although this was still around 15 percentage points lower than the figure for Japan. As a result, the gap between the three countries narrowed considerably over the period.`},
     {task:'ac1', title:'余暇の過ごし方（棒）',
      q:'The chart below shows the average number of hours per week that men and women in one country spent on five leisure activities.\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.',
      chart:{type:'bar', unit:'hours', x:['TV','Sport','Reading','Socialising','Gaming'], series:[['Men',[12,5,3,6,7]],['Women',[11,3,5,8,2]]]},

@@ -1172,7 +1172,8 @@ function aiView(a) {
 
 /* --- pronunciation --- */
 function vPron() {
-  const seg = `<div class="seg" role="group" aria-label="練習の種類"><button data-act="pmode" data-m="word" aria-pressed="${ui.pron.mode === 'word'}">単語</button><button data-act="pmode" data-m="sentence" aria-pressed="${ui.pron.mode === 'sentence'}">例文</button><button data-act="pmode" data-m="guide" aria-pressed="${ui.pron.mode === 'guide'}">発音記号・口の形</button></div>`;
+  const seg = `<div class="seg" role="group" aria-label="練習の種類"><button data-act="pmode" data-m="word" aria-pressed="${ui.pron.mode === 'word'}">単語</button><button data-act="pmode" data-m="sentence" aria-pressed="${ui.pron.mode === 'sentence'}">例文</button><button data-act="pmode" data-m="guide" aria-pressed="${ui.pron.mode === 'guide'}">発音記号・口の形</button><button data-act="pmode" data-m="history" aria-pressed="${ui.pron.mode === 'history'}">録音の記録</button></div>`;
+  if (ui.pron.mode === 'history' && window.REC_HISTORY_VIEW) return `<div class="row">${seg}</div>` + REC_HISTORY_VIEW();
   if (ui.pron.mode === 'guide' && window.PHON_GUIDE) return `<div class="row">${seg}</div>` + PHON_GUIDE();
   const list = filtered(); if (!list.length) return emptyFilter();
   const s = ui.pron; s.i = ((s.i % list.length) + list.length) % list.length;
@@ -1526,5 +1527,6 @@ render();
 <script src="js/notes.js"></script>
 <script src="js/mock.js"></script>
 <script src="js/lessons.js"></script>
+<script src="js/progress.js"></script>
 </body>
 </html>

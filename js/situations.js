@@ -31,30 +31,42 @@
   const CATS = [['all', 'すべて'], ['travel', '旅行'], ['life', '住まい・生活'], ['work', '仕事'], ['social', '人づきあい'], ['trouble', 'トラブル・緊急']];
   S.situ = S.situ || {};
   ui.st = {cat: 'all', id: null, mode: 'talk', showJa: true, k: 0, res: {}, sp: {busy: false, rec: null, err: '', audio: null}, quiz: null};
-  const cur = () => SIT.find(s => s.id === ui.st.id);
-  const playBtn = (text, slow) => `<button class="pb" data-act="say" data-text="${esc(text)}"${slow ? ' data-slow="1"' : ''} aria-label="再生">${slow ? ICON.slow : ICON.speak}</button>`;
+  // country versions: the original dialogue is the UK one; US / AU versions come from SITU_VARIANTS
+  const VERS = [['UK', 'イギリス', 'en-GB'], ['US', 'アメリカ', 'en-US'], ['AU', 'オーストラリア', 'en-AU']];
+  ui.st.ver = {'en-US': 'US', 'en-AU': 'AU'}[S.settings.accent] || 'UK';
+  const base = () => SIT.find(s => s.id === ui.st.id);
+  const variant = (id, ver) => ver !== 'UK' && window.SITU_VARIANTS?.[id]?.[ver];
+  const cur = () => { const b = base(), v = variant(b.id, ui.st.ver); return v ? {...b, place: v.place || b.place, lines: v.lines, notes: v.notes || []} : {...b, notes: []}; };
+  const saveKey = id => ui.st.ver === 'UK' ? id : id + ':' + ui.st.ver;
+  const langOf = () => VERS.find(v => v[0] === ui.st.ver)[2];
+  // speak in the selected country's accent when the device has that voice
+  function voiceFor(lang) { const L = lang.toLowerCase(), m = v => v.lang.replace('_', '-').toLowerCase() === L; return voices.find(v => m(v) && /natural|online|google/i.test(v.name)) || voices.find(m) || pickVoice(); }
+  function sayAs(text, slow) { if (!TTS || !text) return; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text), v = voiceFor(langOf()); if (v) u.voice = v; u.lang = v ? v.lang : langOf(); u.rate = (slow ? .6 : 1) * S.settings.rate; speechSynthesis.speak(u); }
+  const playBtn = (text, slow) => `<button class="pb" data-act="stsay" data-text="${esc(text)}"${slow ? ' data-slow="1"' : ''} aria-label="再生">${slow ? ICON.slow : ICON.speak}</button>`;
 
   // play the whole dialogue only when asked: queue utterances one by one
   function playAll(lines) {
     if (!('speechSynthesis' in window)) return;
     speechSynthesis.cancel();
-    lines.forEach(([, en]) => { const u = new SpeechSynthesisUtterance(en); const v = pickVoice(); if (v) u.voice = v; u.lang = v ? v.lang : S.settings.accent; u.rate = S.settings.rate; speechSynthesis.speak(u); });
+    const v = voiceFor(langOf());
+    lines.forEach(([, en]) => { const u = new SpeechSynthesisUtterance(en); if (v) u.voice = v; u.lang = v ? v.lang : langOf(); u.rate = S.settings.rate; speechSynthesis.speak(u); });
   }
 
   function listView() {
     const q = (ui.st.q || '').trim().toLowerCase(), hit = s => !q || [s.title, s.place, s.goal, ...s.lines.map(l => l[1] + l[2]), ...s.phrases.map(p => p[0] + p[1])].join(' ').toLowerCase().includes(q);
-    const list = SIT.filter(s => (ui.st.cat === 'all' || s.cat === ui.st.cat) && hit(s)), done = SIT.filter(s => S.situ[s.id]?.done).length;
+    const list = SIT.filter(s => (ui.st.cat === 'all' || s.cat === ui.st.cat) && hit(s)), anyDone = id => VERS.some(([k]) => S.situ[k === 'UK' ? id : id + ':' + k]?.done), done = SIT.filter(s => anyDone(s.id)).length;
     return `<p class="lead">実際の旅行や海外生活でそのまま使える会話を、場面ごとに練習します。会話を聞いて → 自分の役を言ってみて → 言い換えフレーズを覚える、の順がおすすめ。</p>
       <div class="seg" role="group">${CATS.map(([k, v]) => `<button data-act="stcat" data-k="${k}" aria-pressed="${ui.st.cat === k}">${v}（${k === 'all' ? SIT.length : SIT.filter(s => s.cat === k).length}）</button>`).join('')}</div>
       <input type="search" id="stsearch" placeholder="場面や表現で検索（例：病院、refund、予約）" value="${esc(ui.st.q || '')}" aria-label="場面を検索">
       <div class="row" style="justify-content:space-between"><b>${list.length}場面</b><span class="small muted">ロールプレイ完了 ${done} / ${SIT.length}</span></div>
-      <div class="sitlist">${list.map(s => `<button class="sitcard ${S.situ[s.id]?.done ? 'done' : ''}" data-act="stopen" data-id="${s.id}">
+      <div class="sitlist">${list.map(s => `<button class="sitcard ${anyDone(s.id) ? 'done' : ''}" data-act="stopen" data-id="${s.id}">
         <span class="row" style="justify-content:space-between;width:100%"><b>${esc(s.title)}</b><span class="lv lv-${s.lv[0]}">${s.lv}</span></span>
-        <span class="pl">${esc(s.place)}</span><span class="gl">${esc(s.goal)}</span>${S.situ[s.id]?.best != null ? `<span class="small up">ロールプレイ ベスト ${S.situ[s.id].best}点</span>` : ''}</button>`).join('')}</div>`;
+        <span class="pl">${esc(s.place)}</span><span class="gl">${esc(s.goal)}</span><span class="small muted">${VERS.filter(([k]) => k === 'UK' || variant(s.id, k)).map(([k, n]) => `${n}${S.situ[k === 'UK' ? s.id : s.id + ':' + k]?.best != null ? ` ${S.situ[k === 'UK' ? s.id : s.id + ':' + k].best}点` : ''}`).join(' ・ ')}</span></button>`).join('')}</div>`;
   }
 
   function talkView(s) {
     return `<div class="row" style="justify-content:space-between"><div class="row"><button class="btn primary" data-act="stplayall">${ICON.speak}会話を通して聞く</button><button class="btn" data-act="stja">${ui.st.showJa ? '日本語をかくす' : '日本語を表示'}</button></div><span class="small muted">相手：${esc(s.role)}</span></div>
+      ${s.notes.length ? `<div class="tipbox"><b>${VERS.find(v => v[0] === ui.st.ver)[1]}版のポイント</b><br>${s.notes.map(t => '・' + esc(t)).join('<br>')}</div>` : ''}
       <div class="chat">${s.lines.map(([w, en, ja]) => `<div class="bub ${w === 'Y' ? 'y' : 'a'}">${playBtn(en)}<span><span class="who">${w === 'Y' ? 'あなた' : esc(s.role)}</span><span class="en ex">${esc(en)}</span>${ui.st.showJa ? `<span class="jp">${esc(ja)}</span>` : ''}</span></div>`).join('')}</div>
       <div><button class="btn primary big" data-act="stmode" data-k="role">ロールプレイに進む</button></div>`;
   }
@@ -91,7 +103,7 @@
 
   function phrView(s) {
     if (ui.st.quiz) return quizView(s);
-    return `<div class="panel" style="gap:4px"><b>この場面で使えるフレーズと言い換え</b>
+    return `${ui.st.ver !== 'UK' ? `<p class="small muted">フレーズ集はイギリス英語が基本です。${VERS.find(v => v[0] === ui.st.ver)[1]}での言い方は「会話を見る」と「${VERS.find(v => v[0] === ui.st.ver)[1]}版のポイント」で確認できます。</p>` : ''}<div class="panel" style="gap:4px"><b>この場面で使えるフレーズと言い換え</b>
         ${s.phrases.map(([en, ja, alts]) => `<div class="phr">${playBtn(en)}<span><span class="en">${esc(en)}</span><span class="small" style="display:block">${esc(ja)}</span>${alts ? `<span class="alt">言い換え：${alts.split('|').map(esc).join(' ／ ')}</span>` : ''}</span></div>`).join('')}</div>
       ${s.hear?.length ? `<div class="panel" style="gap:4px"><div class="row" style="justify-content:space-between"><b>相手がこう言うことも（聞き取り練習）</b><button class="btn ghost" data-act="sthearja">${ui.st.hearJa ? '日本語をかくす' : '日本語を表示'}</button></div>
         ${s.hear.map(([en, ja]) => `<div class="phr">${playBtn(en)}<span><span class="en" style="font-weight:500">${esc(en)}</span>${ui.st.hearJa ? `<span class="small" style="display:block">${esc(ja)}</span>` : ''}</span></div>`).join('')}</div>` : ''}
@@ -116,6 +128,7 @@
     return `<div class="sheet panel" style="gap:12px">
       <div class="row" style="justify-content:space-between"><span><span class="lv lv-${s.lv[0]}">${s.lv}</span> <span class="small muted">${esc(CATS.find(c => c[0] === s.cat)[1])} ・ ${esc(s.place)}</span></span></div>
       <h2 style="font-size:21px">${esc(s.title)}</h2><p class="small">ゴール：${esc(s.goal)}</p>
+      <div class="row" style="gap:8px"><span class="small muted">国のバージョン</span><div class="seg" role="group" aria-label="国">${VERS.filter(([k]) => k === 'UK' || variant(s.id, k)).map(([k, n]) => `<button data-act="stver" data-k="${k}" aria-pressed="${ui.st.ver === k}">${n}</button>`).join('')}</div></div>
       <div class="seg" role="group">${[['talk', '会話を見る'], ['role', 'ロールプレイ'], ['phr', 'フレーズ・言い換え']].map(([k, v]) => `<button data-act="stmode" data-k="${k}" aria-pressed="${ui.st.mode === k}">${v}</button>`).join('')}</div>
       ${ui.st.mode === 'role' ? roleView(s) : ui.st.mode === 'phr' ? phrView(s) : talkView(s)}
     </div>`;
@@ -126,10 +139,12 @@
   function finishLine(res) {
     const s = cur(); ui.st.res[ui.st.k] = res; res.score >= 80 ? window.SFX?.ok() : window.SFX?.ng();
     const mine = s.lines.map((l, i) => i).filter(i => s.lines[i][0] === 'Y');
-    if (mine.every(i => ui.st.res[i])) { const avg = Math.round(mine.reduce((a, i) => a + ui.st.res[i].score, 0) / mine.length); S.situ[s.id] = {done: true, best: Math.max(S.situ[s.id]?.best ?? 0, avg)}; window.addXP?.(5, 'situ'); save(); }
+    if (mine.every(i => ui.st.res[i])) { const avg = Math.round(mine.reduce((a, i) => a + ui.st.res[i].score, 0) / mine.length); const key = saveKey(s.id); S.situ[key] = {done: true, best: Math.max(S.situ[key]?.best ?? 0, avg)}; window.addXP?.(5, 'situ'); save(); }
   }
   Object.assign(ACT, {
     stcat: x => { ui.st.cat = x.k; render(); },
+    stver: x => { ui.st.ver = x.k; ui.st.k = 0; ui.st.res = {}; ui.st.typing = false; ui.st.quiz = null; render(); },
+    stsay: x => sayAs(x.text, !!x.slow),
     stopen: x => { Object.assign(ui.st, {id: x.id, mode: 'talk', k: 0, res: {}, quiz: null, typing: false}); ui.st.sp.err = ''; render(); scrollTo(0, 0); },
     stmode: x => { ui.st.mode = x.k; ui.st.quiz = null; if (x.k === 'role') { ui.st.k = 0; ui.st.res = {}; ui.st.typing = false; } render(); },
     stja: () => { ui.st.showJa = !ui.st.showJa; render(); },

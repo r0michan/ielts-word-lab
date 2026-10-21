@@ -1,6 +1,6 @@
 /* レベル制テスト。
    判定テスト（最初に1回）で現在レベル A1〜C2 を決め、デイリー／週間／マンスリーは現在レベルの問題（A1 の人は A2）で出題。
-   レベルアップテストは次のレベルの問題で 80 点以上なら昇格。昇格から 1 か月以内のテストで 40 点以下なら自動で降格。 */
+   レベルアップテストは次のレベルの問題で 80 点以上なら昇格。昇格から 1 か月以内の週間・マンスリーテストで 40 点以下なら自動で降格。 */
 (() => {
   const css = `
   .tcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
@@ -215,7 +215,7 @@
       if (first || p > (rec[t.key].p ?? pct(rec[t.key].s, rec[t.key].n))) rec[t.key] = {...entry, tries: (rec[t.key]?.tries || 0) + 1};
       else rec[t.key].tries = (rec[t.key].tries || 1) + 1;
       done.first = first;
-      if (onProbation() && p <= FAIL && prevLv(S.lv.cur)) { done.demoted = [S.lv.cur, prevLv(S.lv.cur)]; setLevel(prevLv(S.lv.cur), `${DEF[t.kind].title} ${p}点（昇格後1か月以内に${FAIL}点以下）`, false); }
+      if (t.kind !== 'daily' && onProbation() && p <= FAIL && prevLv(S.lv.cur)) { done.demoted = [S.lv.cur, prevLv(S.lv.cur)]; setLevel(prevLv(S.lv.cur), `${DEF[t.kind].title} ${p}点（昇格後1か月以内に${FAIL}点以下）`, false); }
     }
     t.done = done;
     window.addXP?.(t.kind === 'place' || t.kind === 'levelup' || done.first ? DEF[t.kind].xp : 2, 'test'); save(); render(); scrollTo(0, 0);
@@ -250,9 +250,9 @@
     const mock = t.kind === 'monthly' ? (S.mocks || []).filter(m => m.kind === 'full' && m.date.startsWith(t.key)).pop() : null;
     let banner = '';
     if (r.placed) { const e = eqOf(r.placed); banner = `<div class="banner info">あなたの現在レベルは <span style="font-family:var(--f-word);font-size:26px">${r.placed}</span>${e ? `<div class="small" style="font-weight:700">IELTS ${e.ielts} ・ 英検 ${e.eiken} ・ TOEIC ${e.toeic} 相当</div>` : ''}</div>`; }
-    if (r.promoted) banner = `<div class="banner up">🎉 合格！ ${r.promoted[0]} → <span style="font-family:var(--f-word);font-size:26px">${r.promoted[1]}</span> に昇格しました<div class="small" style="font-weight:700">これから1か月のテストで${FAIL}点以下を取ると ${r.promoted[0]} に戻ります</div></div>`;
+    if (r.promoted) banner = `<div class="banner up">🎉 合格！ ${r.promoted[0]} → <span style="font-family:var(--f-word);font-size:26px">${r.promoted[1]}</span> に昇格しました<div class="small" style="font-weight:700">これから1か月の週間・マンスリーテストで${FAIL}点以下を取ると ${r.promoted[0]} に戻ります</div></div>`;
     else if (t.kind === 'levelup') banner = `<div class="banner dn">不合格（${r.p}点）。合格は${PASS}点以上です</div>`;
-    if (r.demoted) banner = `<div class="banner dn">${r.p}点のため ${r.demoted[0]} → ${r.demoted[1]} に降格しました<div class="small" style="font-weight:700">昇格から1か月以内のテストで${FAIL}点以下だったため。もう一度レベルアップテストに挑戦しましょう</div></div>`;
+    if (r.demoted) banner = `<div class="banner dn">${r.p}点のため ${r.demoted[0]} → ${r.demoted[1]} に降格しました<div class="small" style="font-weight:700">昇格から1か月以内の週間・マンスリーテストで${FAIL}点以下だったため。もう一度レベルアップテストに挑戦しましょう</div></div>`;
     const secsHtml = t.kind === 'place'
       ? LEVELS.map(l => `<div><b>${Math.round((r.acc[l] || 0) * 100)}%</b><span>${l}</span></div>`).join('')
       : Object.entries(r.secs).map(([s, [a, n]]) => `<div><b>${a}/${n}</b><span>${esc(s)}</span></div>`).join('');
@@ -274,7 +274,7 @@
     if (ui.tt) return vRun();
     if (!S.lv) return `<section class="sheet panel" style="gap:12px"><h2 style="font-size:20px">まず判定テストで現在レベルを決めましょう</h2>
         <p>A1〜C2 の各レベルから5問ずつ、全30問（約10分）。正答率 60% 以上のレベルを積み上げて、あなたの現在レベルを判定します。</p>
-        <ul class="small" style="margin:0;padding-left:1.2em;line-height:1.9"><li>デイリー・週間・マンスリーテストは、判定されたレベルの問題で出題されます</li><li>次のレベルへは「レベルアップテスト」で <b>${PASS}点以上</b> を取ると昇格</li><li>昇格から1か月以内のテストで <b>${FAIL}点以下</b> だと自動で降格</li></ul>
+        <ul class="small" style="margin:0;padding-left:1.2em;line-height:1.9"><li>デイリー・週間・マンスリーテストは、判定されたレベルの問題で出題されます</li><li>次のレベルへは「レベルアップテスト」で <b>${PASS}点以上</b> を取ると昇格</li><li>昇格から1か月以内の週間・マンスリーテストで <b>${FAIL}点以下</b> だと自動で降格</li></ul>
         <div><button class="btn primary big" data-act="ttstart" data-k="place">判定テストを始める</button></div></section>`;
     const T = S.tests, cur = S.lv.cur, L = testLv(), nx = nextLv(cur), e = eqOf(cur);
     const card = kind => { const d = DEF[kind], rec = T[kind][d.key()];
@@ -293,7 +293,7 @@
             ${e ? `<span class="small">IELTS ${e.ielts} ・ 英検 ${e.eiken} ・ TOEIC ${e.toeic} 相当</span>` : ''}
             <span class="small muted">テストの出題レベル：${L}${cur === 'A1' ? '（A1 の人は A2 の問題に挑戦します）' : ''}</span>
           </div></div>
-        ${daysLeft ? `<div class="prob">昇格おめでとう！ あと ${daysLeft} 日間は「お試し期間」です。この間のテストで ${FAIL} 点以下を取ると ${S.lv.prev} に降格します。</div>` : ''}
+        ${daysLeft ? `<div class="prob">昇格おめでとう！ あと ${daysLeft} 日間は「お試し期間」です。この間の週間・マンスリーテストで ${FAIL} 点以下を取ると ${S.lv.prev} に降格します。</div>` : ''}
       </section>
       <div class="tcards">
         <div class="tcard"><h3>レベルアップテスト ${nx ? `<span class="lv lv-${nx[0]}">${cur}→${nx}</span>` : ''}</h3>

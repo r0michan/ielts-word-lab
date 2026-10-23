@@ -349,11 +349,13 @@ select,input[type=text],input[type=search],input[type=password],textarea{border-
 <script src="data/reading.js"></script>
 <script src="data/reading2.js"></script>
 <script src="data/reading3.js"></script>
+<script src="data/reading_graded.js"></script>
 <script src="data/countries.js"></script>
 <script src="data/expressions.js"></script>
 <script src="data/listening.js"></script>
 <script src="data/listening2.js"></script>
 <script src="data/listening3.js"></script>
+<script src="data/listening_graded.js"></script>
 <script src="data/japan.js"></script>
 <script src="data/more-practice.js"></script>
 <script src="data/lessons.js"></script>
@@ -618,7 +620,7 @@ function renderBand() {
 const NO_FILTER = ['write', 'speak', 'settings'];
 function renderFilters() {
   const el = $('#filters');
-  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab', 'tests', 'course', 'situ'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
+  el.hidden = NO_FILTER.includes(S.tab) || ['read', 'score', 'expr', 'home', 'listen', 'japan', 'notes', 'mock', 'lessons', 'images', 'dict', 'vocab', 'tests', 'course', 'situ', 'ewrite', 'plan'].includes(S.tab) ||(S.tab === 'sent' && ui.sent.src === 'pat');
   if (el.hidden) return;
   const n = filtered().length;
   el.innerHTML = `
@@ -630,7 +632,7 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['plan','1年プラン',1,'learn'],['ewrite','短い作文',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
   ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','スコア換算・試験比較',1,'exam'],['tests','デイリー・週間・月間テスト',1,'both'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 // Two-level navigation: mode → group pills → the group's tabs. A tab may sit in both modes (e.g. テスト, 記録).
@@ -1604,6 +1606,7 @@ render();
 <script src="js/tests.js"></script>
 <script src="data/grammar1.js"></script>
 <script src="data/grammar2.js"></script>
+<script src="data/grammar3.js"></script>
 <script src="js/gbank.js"></script>
 <script src="js/course.js"></script>
 <script src="data/situations1.js"></script>
@@ -1618,6 +1621,9 @@ render();
 <script src="data/situ_var4.js"></script>
 <script src="data/situ_var5.js"></script>
 <script src="js/situations.js"></script>
+<script src="data/writing_easy.js"></script>
+<script src="js/writing2.js"></script>
+<script src="js/plan.js"></script>
 <script src="js/path.js"></script>
 <script src="js/shell.js"></script>
 </body>

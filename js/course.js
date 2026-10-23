@@ -221,6 +221,7 @@
     ['grammar', '文法問題', '空欄に入る正しい形・語を4択で選ぶ（TOEIC Part 5・英検の大問1と同じ形式）', '空欄の前後だけを見て「品詞・時制・主語との一致」を先に確認。意味から考えるのはその後。', 10],
     ['short', '短文問題', '短い英文の穴埋めと並べ替え', '主語と動詞を先に見つけて、文の骨組みを作ってから修飾語をつなげる。', 8],
     ['write', '記述問題（和文英訳）', '日本語を英語にする。IELTS ライティング・英検の英作文の土台', '日本語を「主語＋動詞」がはっきりした日本語に言い換えてから英語にする（例：「雨にもかかわらず」→ Despite the rain）。', 5],
+    ['essay', '短い作文', 'レベルに合ったお題で作文し、自動チェック・チェックリスト・模範解答で自己添削', '書く前に、言いたいことを日本語の短い文で3〜5個メモし、使う文法（過去形・比較など）を決めておく。', 0],
     ['long', '長文問題', 'IELTS 形式の読解（T/F/NG・見出し・要約など）', '設問を先に読み、本文のどこに答えがあるかを言い換え（paraphrase）を手がかりに探す。全部を訳さない。', 0],
     ['listen', 'リスニング問題', 'IELTS Section 1〜4（会話・講義）', '音声の前に設問を読み、答えが「数字・名前・場所」のどれかを予想しておく。つづりミスに注意。', 0],
   ];
@@ -230,6 +231,7 @@
       <div class="ulist">${PARTS.map(([k, t, what, tip, n]) => `<div class="pcard"><h3>${t}</h3><dl><dt>どんな問題</dt><dd>${what}</dd><dt>解き方のコツ</dt><dd>${tip}</dd></dl>
         <div class="row">${k === 'long' ? (RD.length ? `<button class="btn primary" data-act="cslong" data-id="${RD[0].id}">${esc(RD[0].title)}（${L}）</button>${RD.length > 1 ? `<span class="small muted">ほか${RD.length - 1}題</span>` : ''}` : `<button class="btn" data-act="tab" data-tab="read">読解へ（${L} の長文は準備中のため B1〜C1 から）</button>`)
           : k === 'listen' ? `<button class="btn primary" data-act="tab" data-tab="listen">リスニングへ（${LS.length}題）</button>`
+          : k === 'essay' ? (['A1', 'A2', 'B1', 'B2'].includes(L) ? `<button class="btn primary" data-act="ewfrom" data-l="${L}">${L} の作文お題へ</button>` : `<button class="btn primary" data-act="tab" data-tab="write">IELTS ライティングへ</button>`)
           : `<button class="btn primary" data-act="cspart" data-k="${k}">${n}問に挑戦</button>`}</div></div>`).join('')}</div>`;
   }
   function vCourse() {

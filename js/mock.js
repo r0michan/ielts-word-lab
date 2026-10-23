@@ -20,6 +20,7 @@
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   const DAY = 864e5;
   const RD = () => window.READING || [], LS = () => window.LISTENING || [];
+  const EXAM_LV = t => ['B1', 'B2', 'C1', 'C2'].includes(t.lv);   // graded A1/A2 practice items stay out of mock exams
   const nz = x => String(x ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const lisRight = (q, a) => a != null && a !== '' && (q[0] !== 'gap' ? a === q[2] : q[2].split('/').some(x => nz(x) === nz(a)));
 
@@ -79,15 +80,15 @@
     const pickOf = arr => arr[Math.random() * arr.length | 0];
     const steps = [];
     if (kind === 'full') {
-      [1, 2, 3, 4].forEach(n => { const c = LS().map((t, i) => [t, i]).filter(([t]) => t.section === n); if (c.length) steps.push({type: 'listen', i: pickOf(c)[1]}); });
-      shuffle(RD().map((_, i) => i)).slice(0, 3).forEach(i => steps.push({type: 'read', i}));
+      [1, 2, 3, 4].forEach(n => { const c = LS().map((t, i) => [t, i]).filter(([t]) => t.section === n && EXAM_LV(t)); if (c.length) steps.push({type: 'listen', i: pickOf(c)[1]}); });
+      shuffle(RD().map((r, i) => EXAM_LV(r) ? i : -1).filter(i => i >= 0)).slice(0, 3).forEach(i => steps.push({type: 'read', i}));
       const ps = WRITING.prompts.map((p, i) => [p, i]);
       steps.push({type: 'write', task: mod, pi: pickOf(ps.filter(([p]) => p.task === mod))[1]});
       steps.push({type: 'write', task: 't2', pi: pickOf(ps.filter(([p]) => p.task === 't2'))[1]});
       [1, 2, 3].forEach(n => steps.push({type: 'speak', part: n, qi: pickOf(SPEAK_Q.map((q, i) => [q, i]).filter(([q]) => q.p === n))[1]}));
     } else {
-      steps.push({type: 'listen', i: Math.random() * LS().length | 0});
-      steps.push({type: 'read', i: Math.random() * RD().length | 0});
+      steps.push({type: 'listen', i: pickOf(LS().map((t, i) => [t, i]).filter(([t]) => EXAM_LV(t)))[1]});
+      steps.push({type: 'read', i: pickOf(RD().map((t, i) => [t, i]).filter(([t]) => EXAM_LV(t)))[1]});
       steps.push({type: 'write', task: 't2', pi: pickOf(WRITING.prompts.map((p, i) => [p, i]).filter(([p]) => p.task === 't2'))[1]});
       steps.push({type: 'speak', part: 2, qi: pickOf(SPEAK_Q.map((q, i) => [q, i]).filter(([q]) => q.p === 2))[1]});
     }

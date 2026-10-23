@@ -76,9 +76,10 @@ html.shell .filters{display:block}
 .tile em{font-style:normal;font-size:12px;font-weight:800;background:var(--sunk);color:var(--muted);border-radius:999px;padding:2px 9px;white-space:nowrap;flex:none}
 .tile em.hot{background:var(--accent);color:var(--on-accent)}
 .tile .chev svg,.morelink svg{width:18px;height:18px;color:var(--muted)}
-.ic-lessons,.ic-sent,.ic-expr,.ic-japan{background:color-mix(in srgb,var(--c3) 14%,transparent);color:var(--c3)}
+.ic-lessons,.ic-sent,.ic-expr,.ic-japan,.ic-ewrite{background:color-mix(in srgb,var(--c3) 14%,transparent);color:var(--c3)}
 .ic-situ,.ic-dict,.ic-pron{background:var(--good-soft);color:var(--good)}
 .ic-mock,.ic-read,.ic-listen,.ic-write,.ic-speak,.ic-score{background:color-mix(in srgb,var(--c2) 16%,transparent);color:var(--c2)}
+.ic-plan{background:#FFF1C9;color:#B07A00}
 .ic-notes,.ic-settings{background:var(--sunk);color:var(--muted)}
 
 /* ---- home ---- */

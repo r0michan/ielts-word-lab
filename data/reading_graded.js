@@ -1,0 +1,142 @@
+/* レベル別の読み物（A1〜B2）。A1・A2 は短く、選択問題中心。B1 から T/F/NG、B2 は IELTS に近い長さ。 */
+window.READING.push(
+  {id:'g-a1-day', title:'A Day in London', lv:'A1', topic:'日常（イギリス）',
+   paras:['Hi, I\'m Lily. I\'m twenty years old and I\'m a student in London. I get up at seven o\'clock every day. I have toast and a cup of tea for breakfast.','I go to university on the Tube. It\'s the London Underground. My classes start at nine. I like English and history. I have lunch with my friends at half past twelve. We usually have sandwiches.','After classes, I work in a coffee shop on Mondays and Thursdays. I usually get home at eight. In the evening, I watch TV or read a book. I go to bed at eleven.'],
+   groups:[{type:'mc', items:[
+    ['How does Lily go to university?',['by bus','on the Tube','by bike','on foot'],1,'B段落「I go to university on the Tube.」the Tube はロンドンの地下鉄。'],
+    ['What does Lily have for breakfast?',['rice and miso soup','eggs and milk','toast and tea','nothing'],2,'A段落「I have toast and a cup of tea」。イギリスの定番の朝食。'],
+    ['When does Lily work in the coffee shop?',['every day','on weekends','on Mondays and Thursdays','in the morning'],2,'C段落「on Mondays and Thursdays」'],
+    ['What time does Lily go to bed?',['at eight','at nine','at ten','at eleven'],3,'C段落「I go to bed at eleven.」'],
+   ]}]},
+  {id:'g-a1-family', title:'Emma\'s Family', lv:'A1', topic:'家族（イギリス）',
+   paras:['My name is Emma. I live in a small house in Bristol with my family. There are five people in my family: my mum, my dad, my two brothers and me.','My dad is a teacher. He teaches maths at a high school. My mum is a nurse. She works at a big hospital in the city centre.','My older brother, Tom, is eighteen. He loves football. My younger brother, Sam, is only six. He likes drawing pictures of animals. We also have a dog. His name is Biscuit, and he is very friendly.'],
+   groups:[{type:'mc', items:[
+    ['How many people are in Emma\'s family?',['three','four','five','six'],2,'A段落「There are five people」。'],
+    ['What is Emma\'s mum\'s job?',['a teacher','a nurse','a doctor','a cook'],1,'B段落「My mum is a nurse.」'],
+    ['What does Sam like?',['football','drawing animals','cooking','music'],1,'C段落「He likes drawing pictures of animals.」'],
+    ['Who is Biscuit?',['Emma\'s brother','Emma\'s friend','the family dog','a teacher'],2,'C段落「We also have a dog. His name is Biscuit」。'],
+   ]}]},
+  {id:'g-a1-cafe', title:'The Sunny Café Menu', lv:'A1', topic:'食事（イギリスのカフェ）',
+   paras:['SUNNY CAFÉ — Open every day from 8 a.m. to 6 p.m.','Breakfast (until 11 a.m.): toast and jam £3, eggs on toast £5, pancakes £6.','Lunch (from 12 p.m.): soup of the day £4, chicken sandwich £6, cheese and tomato pizza £8.','Drinks: tea £2, coffee £2.50, orange juice £3. Free Wi-Fi! Children under 5 eat for free.'],
+   groups:[{type:'mc', items:[
+    ['What time does the café close?',['5 p.m.','6 p.m.','8 p.m.','11 a.m.'],1,'「Open every day from 8 a.m. to 6 p.m.」'],
+    ['How much are pancakes?',['£3','£4','£5','£6'],3,'「pancakes £6」'],
+    ['Can you have breakfast at 12 p.m.?',['Yes, any time.','No, only until 11 a.m.','Only on weekends.','Only with coffee.'],1,'「Breakfast (until 11 a.m.)」'],
+    ['Who eats for free?',['students','children under 5','everyone on Sunday','people with Wi-Fi'],1,'「Children under 5 eat for free.」'],
+   ]}]},
+  {id:'g-a1-messages', title:'Weekend Plans', lv:'A1', topic:'メッセージ',
+   paras:['Ben: Hi Mia! Are you free on Saturday?','Mia: Hi Ben! Yes, I am. Why?','Ben: There\'s a new film at the cinema. Do you want to come?','Mia: Sounds great! What time does it start?','Ben: At four o\'clock. Let\'s meet at the station at half past three.','Mia: OK. Can my sister come too? She loves films.','Ben: Of course! See you on Saturday.'],
+   groups:[{type:'mc', items:[
+    ['What does Ben want to do on Saturday?',['go shopping','see a film','play football','study'],1,'「There\'s a new film at the cinema.」'],
+    ['What time does the film start?',['3:00','3:30','4:00','4:30'],2,'「At four o\'clock.」'],
+    ['Where will they meet?',['at the cinema','at Mia\'s house','at the station','at a café'],2,'「Let\'s meet at the station」'],
+    ['Who else will go?',['Ben\'s brother','Mia\'s sister','Mia\'s mother','nobody'],1,'「Can my sister come too?」「Of course!」'],
+   ]}]},
+  {id:'g-a2-edinburgh', title:'A Weekend in Edinburgh', lv:'A2', topic:'旅行（イギリス）',
+   paras:['Last spring, I visited Edinburgh, the capital of Scotland, with my friend Lucy. We took the train from London, and the journey took just over four hours. We stayed in a small guesthouse near the castle.','On the first day, we went to Edinburgh Castle in the morning. There were a lot of tourists, so we decided to go to the museums early the next day. In the afternoon, we walked up Arthur\'s Seat, a big hill in the middle of the city. It was very windy, but the view was beautiful.','The food was the best part of the trip. Lucy tried haggis, a traditional Scottish dish, for the first time and loved it. I wanted to buy some shortbread for my family, but the shop was closed. Next time, I want to stay longer and visit the Highlands too.'],
+   groups:[{type:'mc', items:[
+    ['How did they travel to Edinburgh?',['by plane','by bus','by train','by car'],2,'A段落「We took the train from London」'],
+    ['Why did they decide to go to the museums early the next day?',['It was too hot.','There were a lot of tourists.','The museums closed early.','Lucy was tired.'],1,'B段落「There were a lot of tourists, so we decided to go … early」'],
+   ]},{type:'tfng', items:[
+    ['The writer thought the food was the best part.','T','C段落「The food was the best part of the trip.」'],
+    ['Lucy didn\'t like haggis.','F','C段落「tried haggis for the first time and loved it」'],
+    ['The writer bought shortbread for the family.','F','C段落「the shop was closed」で買えなかった。'],
+   ]}]},
+  {id:'g-a2-job', title:'Sam\'s New Job', lv:'A2', topic:'仕事',
+   paras:['Sam started a new job at a bookshop last month. Before that, he worked in a supermarket for three years. He likes his new job much more because he loves books and the customers are friendly.','Sam works from Tuesday to Saturday. He starts at ten and finishes at six. On Saturdays, the shop is very busy, so he doesn\'t have much time for lunch. His favourite part of the job is helping children choose books.','Next year, Sam wants to study to become a librarian. He thinks it will be difficult, but his manager has offered to help him.'],
+   groups:[{type:'mc', items:[
+    ['Where did Sam work before?',['in a library','in a café','in a supermarket','in a school'],2,'A段落「he worked in a supermarket for three years」'],
+    ['What is Sam\'s favourite part of the job?',['talking to his manager','helping children choose books','the long lunch break','working on Saturdays'],1,'B段落「His favourite part of the job is helping children」'],
+   ]},{type:'tfng', items:[
+    ['Sam works five days a week.','T','B段落「from Tuesday to Saturday」で5日。'],
+    ['Saturday is a quiet day at the shop.','F','B段落「the shop is very busy」'],
+    ['Sam\'s manager will help him with his studies.','T','C段落「his manager has offered to help him」'],
+   ]}]},
+  {id:'g-a2-notice', title:'Library Notice', lv:'A2', topic:'お知らせ',
+   paras:['CITY LIBRARY — IMPORTANT CHANGES FROM 1 MAY','Opening hours: The library will now open at 9 a.m. instead of 10 a.m. on weekdays. Weekend hours stay the same (10 a.m. to 4 p.m.).','Borrowing: Members can now borrow up to 12 books at a time (previously 8). E-books are still free with your library card.','Study room: The study room on the second floor will be closed for repairs until the end of June. Please use the tables on the ground floor.','Events: Free English conversation club every Wednesday at 6 p.m. No booking needed.'],
+   groups:[{type:'mc', items:[
+    ['What time will the library open on weekdays from 1 May?',['8 a.m.','9 a.m.','10 a.m.','4 p.m.'],1,'「open at 9 a.m. instead of 10 a.m. on weekdays」'],
+    ['How many books can members borrow now?',['8','10','12','15'],2,'「up to 12 books at a time」'],
+    ['Why is the study room closed?',['for repairs','for an event','because of a lack of staff','for cleaning every day'],0,'「closed for repairs」'],
+   ]},{type:'tfng', items:[
+    ['Weekend opening hours will change.','F','「Weekend hours stay the same」'],
+    ['You must book a place for the conversation club.','F','「No booking needed.」'],
+   ]}]},
+  {id:'g-a2-host', title:'An Email from a Host Family', lv:'A2', topic:'留学・メール',
+   paras:['Dear Ken,','We\'re so happy you\'re coming to stay with us next month! We live in a quiet street about twenty minutes from the city centre by bus. Your room is on the first floor, and it has a desk and a big window.','We usually have dinner together at half past six. Please tell us if there is any food you don\'t eat. Breakfast is simple: cereal, toast and fruit. You can make your own lunch in the kitchen.','Our son, Oliver, is the same age as you, and he is excited to show you around. Please bring warm clothes — it often rains here in October!','Best wishes, The Harris family'],
+   groups:[{type:'mc', items:[
+    ['How far is the house from the city centre?',['ten minutes on foot','twenty minutes by bus','an hour by train','very close'],1,'B段落「about twenty minutes from the city centre by bus」'],
+    ['What does the family ask Ken to tell them?',['his flight time','food he doesn\'t eat','his favourite sport','his room size'],1,'C段落「tell us if there is any food you don\'t eat」'],
+   ]},{type:'tfng', items:[
+    ['The family has dinner together.','T','C段落「We usually have dinner together」'],
+    ['Oliver is older than Ken.','F','D段落「the same age as you」'],
+    ['Ken should bring warm clothes.','T','D段落「Please bring warm clothes」'],
+   ]}]},
+  {id:'g-b1-cook', title:'Learning to Cook Online', lv:'B1', topic:'生活・趣味',
+   paras:['When Maria moved into her first flat, she could only make toast and instant noodles. She was spending a lot of money on takeaways, so she decided to learn to cook. Instead of taking a class, she started watching cooking videos online.','At first, she chose simple recipes with only five ingredients. She soon discovered that the hardest part was not the cooking itself, but planning meals for the week and buying the right amount of food. To solve this, she began writing a shopping list every Sunday.','After six months, Maria can make about twenty different dishes. She says she saves around eighty pounds a month. However, she admits that online videos have limits. "Nobody tells you when you\'re doing something wrong," she says. "Sometimes I wish I had a real teacher."'],
+   groups:[{type:'tfng', items:[
+    ['Maria learned to cook because takeaways were expensive.','T','A段落「spending a lot of money on takeaways, so she decided to learn」'],
+    ['Maria took a cooking class before watching videos.','F','A段落「Instead of taking a class」'],
+    ['Maria found the cooking itself the most difficult part.','F','B段落「the hardest part was not the cooking itself, but planning」'],
+    ['Maria\'s favourite dish is pasta.','NG','好きな料理については書かれていない。'],
+    ['Maria thinks learning from videos has some disadvantages.','T','C段落「online videos have limits」'],
+   ]}]},
+  {id:'g-b1-sleep', title:'Why Sleep Matters', lv:'B1', topic:'健康',
+   paras:['Most adults need between seven and nine hours of sleep a night, but many people regularly get less than six. Doctors say this can have serious effects on both our bodies and our minds.','When we sleep, the brain organises the information it has taken in during the day. This is why students who sleep well before an exam often remember more than those who stay up late studying. Lack of sleep also affects our mood, making us more likely to feel stressed or angry.','Experts recommend a few simple habits: going to bed at the same time every night, avoiding screens for an hour before sleep, and keeping the bedroom cool and dark. They also suggest avoiding coffee after lunchtime, as its effects can last for up to six hours.'],
+   groups:[{type:'tfng', items:[
+    ['Many people sleep less than they need.','T','A段落「many people regularly get less than six」'],
+    ['Studying late at night always improves exam results.','F','B段落は、よく眠った学生の方が覚えていることが多いと述べている。'],
+    ['Lack of sleep can make people feel stressed.','T','B段落「more likely to feel stressed or angry」'],
+    ['Experts say people should exercise before bed.','NG','運動については書かれていない。'],
+   ]},{type:'mc', items:[
+    ['Why do experts suggest avoiding coffee after lunch?',['It is bad for the stomach.','Its effects can last for hours.','It makes people hungry.','It is expensive.'],1,'C段落「its effects can last for up to six hours」'],
+   ]}]},
+  {id:'g-b1-fourday', title:'The Four-Day Week', lv:'B1', topic:'仕事・社会',
+   paras:['In recent years, several companies have tried a four-day working week. In most trials, employees work four days but receive the same salary as before. The idea is that people will work more efficiently if they have more time to rest.','The results have been mostly positive. Many workers reported feeling less tired and more motivated, and some companies said productivity stayed the same or even improved. Fewer staff took sick days, and it became easier to attract new employees.','However, the system does not suit every job. Hospitals, shops and restaurants need people at work every day, so they would have to hire more staff. Some managers also worry that customers may be unhappy if offices are closed on Fridays.'],
+   groups:[{type:'tfng', items:[
+    ['In most trials, workers were paid less.','F','A段落「receive the same salary as before」'],
+    ['Some companies found productivity improved.','T','B段落「stayed the same or even improved」'],
+    ['Workers took more sick days during the trials.','F','B段落「Fewer staff took sick days」'],
+    ['The four-day week is now the law in some countries.','NG','法律については書かれていない。'],
+    ['Restaurants may need to employ more people to use the system.','T','C段落「would have to hire more staff」'],
+   ]}]},
+  {id:'g-b1-volunteer', title:'Volunteering Abroad', lv:'B1', topic:'国際・社会',
+   paras:['Every year, thousands of young people spend part of their gap year volunteering in other countries. They might teach English, help build schools or work on conservation projects. Many say the experience changed the way they see the world.','Volunteering can also help with future careers. Employers often value the skills volunteers develop, such as working in a team, solving problems and communicating with people from different cultures.','But not all programmes are well organised. Some charge volunteers high fees, and a few have been criticised for doing more harm than good — for example, when volunteers without training work with young children. Experts advise choosing a programme carefully and asking how the money is spent.'],
+   groups:[{type:'tfng', items:[
+    ['All volunteers work on conservation projects.','F','A段落は「teach English, help build schools or work on conservation」と複数の例を挙げている。'],
+    ['Employers may value skills gained through volunteering.','T','B段落「Employers often value the skills」'],
+    ['Most volunteering programmes are free.','NG','費用が高いものがあるとは書かれているが、多くが無料かどうかは書かれていない。'],
+    ['Experts recommend checking how a programme uses its money.','T','C段落「asking how the money is spent」'],
+   ]}]},
+  {id:'g-b2-fashion', title:'The Hidden Cost of Fast Fashion', lv:'B2', topic:'環境・消費',
+   paras:['Over the past twenty years, the price of clothing has fallen dramatically in many countries, while the number of garments people buy has roughly doubled. This trend, known as "fast fashion", allows shoppers to follow the latest styles cheaply, but its environmental cost is considerable.','The textile industry uses enormous quantities of water. Producing a single cotton T-shirt can require around 2,700 litres, roughly what one person drinks in two and a half years. Synthetic fabrics such as polyester avoid this problem but release tiny plastic fibres when washed, many of which end up in rivers and oceans.','Waste is another concern. A large proportion of clothing is worn only a handful of times before being thrown away, and only a small fraction of used textiles is recycled into new clothes. Much of the rest is burned or sent to landfill.','Some brands have responded by offering repair services or collecting old garments, while second-hand clothing apps have become increasingly popular among young consumers. Critics argue, however, that such initiatives cannot solve the problem unless people simply buy fewer clothes.'],
+   groups:[{type:'tfng', items:[
+    ['People buy about twice as many clothes as twenty years ago.','T','A段落「has roughly doubled」'],
+    ['Polyester requires more water to produce than cotton.','NG','ポリエステルは水の問題を避けるとあるだけで、量の比較は書かれていない。'],
+    ['Most used clothing is recycled into new garments.','F','C段落「only a small fraction ... is recycled into new clothes」'],
+    ['Second-hand clothing apps are popular with young people.','T','D段落「increasingly popular among young consumers」'],
+   ]},{type:'mc', items:[
+    ['What is the critics\' main point in the final paragraph?',['Repair services are too expensive.','Buying fewer clothes is the only real solution.','Recycling technology will solve the problem.','Brands should stop selling clothes.'],1,'D段落「cannot solve the problem unless people simply buy fewer clothes」'],
+   ]}]},
+  {id:'g-b2-apps', title:'Can Apps Make Us Healthier?', lv:'B2', topic:'健康・テクノロジー',
+   paras:['Health apps that count steps, track sleep or record what we eat are now used by millions of people. Their supporters claim that simply measuring our behaviour encourages us to improve it, and some studies do suggest that people who track their activity walk more, at least at first.','However, the long-term effects are less clear. Research indicates that many users stop using such apps within a few months. Once the novelty wears off, old habits often return, particularly if the app relies on numbers alone rather than helping people understand why a change matters.','There are also concerns about accuracy and privacy. Some devices overestimate the calories burned during exercise, which may lead users to eat more than they need. In addition, the personal data these apps collect can be valuable to advertisers, and users are not always aware of how it is shared.','Experts therefore suggest treating health apps as a useful tool rather than a solution in themselves. They appear to work best when combined with clear personal goals and support from friends, family or health professionals.'],
+   groups:[{type:'tfng', items:[
+    ['Some studies show that tracking activity can increase walking in the short term.','T','A段落「people who track their activity walk more, at least at first」'],
+    ['Most users continue using health apps for several years.','F','B段落「many users stop using such apps within a few months」'],
+    ['Some devices underestimate the calories people burn.','F','C段落は「overestimate（多く見積もる）」と述べている。'],
+    ['Health apps are illegal in some countries.','NG','法律については書かれていない。'],
+   ]},{type:'mc', items:[
+    ['According to experts, when do health apps work best?',['when they are free','when used with goals and support from others','when they show more numbers','when used only at night'],1,'D段落「combined with clear personal goals and support」'],
+   ]}]},
+  {id:'g-b2-procrastination', title:'Why Do We Procrastinate?', lv:'B2', topic:'心理',
+   paras:['Almost everyone has delayed an important task at some point, choosing to tidy a desk or check social media instead. For a long time, procrastination was seen simply as a sign of laziness or poor time management. Psychologists now believe the reality is more complicated.','According to recent research, procrastination is often a way of avoiding unpleasant feelings. A task that seems boring, difficult or likely to lead to failure creates stress, and putting it off brings immediate relief. Unfortunately, this relief is short-lived, and the stress usually returns, often stronger than before.','This explains why simply buying a planner rarely solves the problem. Instead, researchers recommend strategies that make starting easier, such as breaking a large task into very small steps or committing to work on it for just five minutes. Once people begin, they frequently continue for much longer.','Self-criticism, interestingly, tends to make things worse. Studies have found that students who forgave themselves for procrastinating before one exam were less likely to procrastinate before the next.'],
+   groups:[{type:'tfng', items:[
+    ['Psychologists now see procrastination as simply laziness.','F','A段落「Psychologists now believe the reality is more complicated.」'],
+    ['Putting off a task can reduce stress temporarily.','T','B段落「putting it off brings immediate relief ... short-lived」'],
+    ['Buying a planner is the most effective solution.','F','C段落「simply buying a planner rarely solves the problem」'],
+    ['Students who were kind to themselves procrastinated less later.','T','D段落「forgave themselves ... were less likely to procrastinate」'],
+    ['Procrastination is more common among older people.','NG','年齢については書かれていない。'],
+   ]}]},
+);
+// list passages from easy to hard in the reading selector
+(() => { const LV = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']; window.READING = window.READING.map((r, i) => [r, i]).sort((a, b) => LV.indexOf(a[0].lv) - LV.indexOf(b[0].lv) || a[1] - b[1]).map(x => x[0]); })();

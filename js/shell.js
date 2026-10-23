@@ -20,6 +20,8 @@
     sent: I('<path d="M4 6h16M4 10h10M4 14h16M4 18h8"/>'),
     expr: I('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'),
     japan: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/>'),
+    plan: I('<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h3M8 17h6"/>'),
+    ewrite: I('<path d="M4 20h16"/><path d="M14.5 4.5a2.1 2.1 0 0 1 3 3L8 17l-4 1 1-4z"/>'),
     situ: I('<path d="M14 9a2 2 0 0 1-2 2H6l-3 3V4a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2z"/><path d="M18 9h1a2 2 0 0 1 2 2v10l-3-3h-6a2 2 0 0 1-2-2v-1"/>'),
     dict: I('<path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="14" width="5" height="7" rx="2"/><rect x="17" y="14" width="5" height="7" rx="2"/>'),
     pron: I('<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>'),
@@ -39,9 +41,10 @@
   const DEST = [['home', 'ホーム'], ['learn', '学ぶ'], ['exam', '試験対策'], ['tests', 'テスト'], ['record', '記録']];
   const HUBS = {
     learn: {title: '学ぶ', lead: '単語・文法・発音を、自分のペースで積み上げる', groups: [
-      ['レベル別コース', [['course', 'レベル別コース（A1〜C2）', '文法ユニット・単語帳・パート別練習。中学〜大学・英検・TOEIC の目安つき']]],
+      ['レベル別コース', [['plan', '1年プラン（B2まで）', '今のレベルから月ごとの目標と毎週やることを自動で作成'], ['course', 'レベル別コース（A1〜C2）', '文法ユニット・単語帳・パート別練習。中学〜大学・英検・TOEIC の目安つき']]],
       ['単語', [['card', '単語カード', '忘れる前に出題する間隔反復'], ['quiz', 'クイズ', '4択・書き取りで定着を確認'], ['vocab', '語彙ドリル', '言い換え・コロケーション・品詞・つづり・トピック'], ['images', 'イメージ図鑑', '前置詞・時制・冠詞を図で理解'], ['list', '単語帳', '5,000語の検索と進み具合']]],
       ['文法・表現', [['lessons', 'レッスン', '文法と表現を順番に学ぶ'], ['sent', '文トレ', '構文の並べ替え・穴埋め・音読'], ['expr', '表現・イディオム', '国ごとの言い方・会話表現・スラング'], ['japan', '日本人の弱点', 'L/R・和製英語・間違えやすい文']]],
+      ['書く', [['ewrite', '短い作文（A1〜B2）', 'レベル別のお題・自動チェック・模範解答で自己添削']]],
       ['聞く・話す', [['situ', 'シチュエーション会話', '76場面 × イギリス・アメリカ・オーストラリアの3バージョン'], ['dict', 'ディクテーション', '聞いて書き取る・数字とつづり'], ['pron', '発音練習', '口の形の図と録音で確認']]],
     ]},
     exam: {title: '試験対策', lead: 'IELTS の4技能を本番形式で練習する', groups: [
@@ -136,7 +139,7 @@
     if (ui.place) return baseHome();
     const p = homeParts();
     if (!window.PATH) return `${greet()}${html(p.hero)}${html(p.today)}<div class="hgrid">${html(p.ring)}${html(p.exam)}</div>${html(p.other)}`;
-    return `${PATH.stats()}${html(p.hero)}${PATH.path()}${PATH.quests()}${html(p.other)}
+    return `${PATH.stats()}${html(p.hero)}${window.PLAN_CARD?.() || ''}${PATH.path()}${PATH.quests()}${html(p.other)}
       <button class="morelink" data-act="tab" data-tab="hub-record">今日のおすすめ・試験日の設定・弱点レーダー・バッジ ${IC.chevron}</button>`;
   }
   function recordExtras() {

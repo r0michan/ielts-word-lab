@@ -178,6 +178,12 @@
     S.lv = {...(S.lv || {}), cur: to, at: Date.now(), prev: from, probUntil: probation ? Date.now() + PROBATION : 0, hist: [...(S.lv?.hist || []), {t: Date.now(), from, to, why}].slice(-50)};
     const i = LEVELS.indexOf(to); S.levels = LEVELS.slice(i, i + 2); ui.quiz = null; ui.cram = false;
   }
+  // ケンブリッジ形式の昇格テスト（cambridge.js）から呼ばれる：合格ラインは本試験と同じ60%
+  window.LEVEL_PROMOTE = (L, p, pass) => {
+    const ok = p >= pass;
+    S.tests.levelup = [...S.tests.levelup, {lv: L, from: S.lv?.cur, s: p, n: 100, p, pass: ok, at: Date.now(), cb: true}].slice(-40);
+    if (ok && S.lv && LEVELS.indexOf(L) > LEVELS.indexOf(S.lv.cur)) setLevel(L, `昇格テスト（ケンブリッジ形式）${p}%`, true);
+  };
   const onProbation = () => S.lv?.probUntil && Date.now() < S.lv.probUntil;
 
   /* ---------- runner ---------- */
@@ -277,6 +283,7 @@
   /* ---------- dashboard ---------- */
   function vTests() {
     if (ui.tt) return vRun();
+    const cbv = window.CB_VIEW?.(); if (cbv) return cbv;
     if (!S.lv) return `<section class="sheet panel" style="gap:12px"><h2 style="font-size:20px">まず判定テストで現在レベルを決めましょう</h2>
         <p>A1〜C2 の各レベルから5問ずつ、全30問（約10分）。正答率 60% 以上のレベルを積み上げて、あなたの現在レベルを判定します。</p>
         <ul class="small" style="margin:0;padding-left:1.2em;line-height:1.9"><li>デイリー・週間・マンスリーテストは、判定されたレベルの問題で出題されます</li><li>次のレベルへは「レベルアップテスト」で <b>${PASS}点以上</b> を取ると昇格</li><li>昇格から1か月以内の週間・マンスリーテストで <b>${FAIL}点以下</b> だと自動で降格</li></ul>
@@ -304,10 +311,12 @@
         <div class="tcard"><h3>レベルアップテスト ${nx ? `<span class="lv lv-${nx[0]}">${cur}→${nx}</span>` : ''}</h3>
           ${nx ? `<span class="meta">${DEF.levelup.n}・${nx} レベルの問題で ${PASS} 点以上なら昇格</span>
             <span class="st">${lastUp ? `前回：${lastUp.p}点（${lastUp.pass ? '合格' : '不合格'}）` : 'まだ挑戦していません'}</span>
-            <div><button class="btn primary" data-act="ttstart" data-k="levelup">${nx} に挑戦する</button></div>`
+            ${window.CAMBRIDGE?.[nx] ? `<span class="small">おすすめ：${esc(CAMBRIDGE[nx].name)}の試験形式（ライティング・リスニング込み）で <b>60%以上</b>なら昇格（本試験の合格ラインと同じ）</span>` : ''}
+            <div class="row">${window.CAMBRIDGE?.[nx] ? `<button class="btn primary" data-act="cbstart" data-l="${nx}" data-m="levelup">試験形式で ${nx} に挑戦</button>` : ''}<button class="btn ${window.CAMBRIDGE?.[nx] ? '' : 'primary'}" data-act="ttstart" data-k="levelup">${window.CAMBRIDGE?.[nx] ? 'クイック版（30問）' : `${nx} に挑戦する`}</button></div>`
           : `<span class="st up">最高レベル C2 に到達しています 🎉</span>`}</div>
         ${card('daily')}${card('weekly')}${card('monthly')}
       </div>
+      ${window.CB_LIST ? CB_LIST() : ''}
       ${weeks.length ? `<section class="sheet panel" style="gap:6px"><b>週間テストの推移（点）</b>${bars(weeks)}</section>` : ''}
       ${months.length ? `<section class="sheet panel" style="gap:6px"><b>マンスリーテストの推移（点）</b>${bars(months)}</section>` : ''}
       ${S.lv.hist?.length ? `<section class="sheet panel" style="gap:6px"><b>レベルの履歴</b>${[...S.lv.hist].reverse().slice(0, 8).map(h => `<div class="small">${new Date(h.t).toLocaleDateString('ja-JP')}　${h.from ? `${h.from} → ` : ''}<b>${h.to}</b>　<span class="muted">${esc(h.why)}</span></div>`).join('')}</section>` : ''}

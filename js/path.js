@@ -25,33 +25,46 @@
   .chest.ready{filter:none;opacity:1;animation:wiggle 1.2s ease-in-out infinite}
   .chest.got{filter:none;opacity:.4}
   @keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}}
-  .psec{border-radius:22px;padding:16px 18px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;border:0;text-align:left;width:100%;box-shadow:0 4px 0 rgba(0,0,0,.15)}
-  .psec b{font-size:20px;font-family:var(--f-word)}
-  .psec span{font-size:12.5px;opacity:.95;display:block}
-  .psec .pc{font-family:var(--f-word);font-weight:800;font-size:15px;white-space:nowrap}
-  .lvA1{background:#58CC71}.lvA2{background:#1CB0F6}.lvB1{background:#CE82FF}.lvB2{background:#FF9600}.lvC1{background:#FF4B4B}.lvC2{background:#2B70C9}
-  .path{display:flex;flex-direction:column;align-items:center;gap:18px;padding:22px 0 10px;overflow-x:clip}
-  .pnode{transform:translateX(var(--x))}
-  .pnode.sel{z-index:40}
-  @media (max-width:480px){.pnode{transform:translateX(calc(var(--x) * .6))}}
-  .pnode{position:relative;display:flex;flex-direction:column;align-items:center}
-  .pbtn{width:72px;height:66px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;color:#fff;box-shadow:0 7px 0 rgba(0,0,0,.18);transition:transform .08s}
-  .pbtn:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
-  .pbtn svg{width:30px;height:30px;stroke-width:2.6}
-  .pnode.ptodo .pbtn{background:#E5E5E5!important;color:#AFAFAF;box-shadow:0 7px 0 #CFCFCF}
-  .pnode.pdone .pbtn{background:#FFC800!important;box-shadow:0 7px 0 #E5A100}
-  .pnode.pnext .pbtn{animation:bob 1.6s ease-in-out infinite}
-  .pnode.pnext::before{content:"";position:absolute;top:-9px;width:90px;height:90px;border-radius:50%;border:6px solid var(--line)}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .pstart{position:absolute;top:-46px;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:5px 12px;font-weight:900;font-size:13px;color:var(--accent);white-space:nowrap;animation:bob 1.6s ease-in-out infinite}
-  .pstart::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-7px;border:7px solid transparent;border-top-color:var(--line)}
-  .ppop{position:absolute;top:84px;z-index:20;width:min(280px,78vw);border-radius:18px;padding:14px 16px;color:#fff;display:flex;flex-direction:column;gap:6px;text-align:left;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-  .ppop b{font-size:16px}
-  .ppop span{font-size:13px;opacity:.95}
-  .ppop button{border:0;border-radius:12px;background:#fff;font-weight:900;padding:11px;cursor:pointer;font-family:var(--f-ui);box-shadow:0 4px 0 rgba(0,0,0,.15)}
-  .pcheck{width:110px;height:96px;border-radius:24px}
-  .pmore{border:2px dashed var(--line);background:none;border-radius:16px;padding:10px 16px;color:var(--muted);font-weight:800;cursor:pointer}
-  @media (prefers-reduced-motion:reduce){.pnode.pnext .pbtn,.pstart,.chest.ready{animation:none}}
+  .chips-top{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+  .chips-top::-webkit-scrollbar{display:none}
+  .ctop{flex:none;display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;position:relative;overflow:hidden;cursor:default;color:var(--ink)}
+  .ctop b{font-family:var(--f-word);font-size:16px}
+  .ctop.fire b{color:#FF9600} .ctop.xp b{color:#E5A100} .ctop.lv{cursor:pointer} .ctop.lv b{color:var(--accent)} .ctop.ex b{color:var(--c3)}
+  .ctop.xp i{position:absolute;left:0;bottom:0;height:3px;width:var(--p);background:#FFC800}
+  .qcard{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;overflow:hidden}
+  .qhead{width:100%;display:flex;align-items:center;gap:10px;border:0;background:none;padding:12px 14px;cursor:pointer;font-weight:800;font-size:14px;text-align:left;color:var(--ink)}
+  .qhead > span:first-child{flex:1}
+  .qdots{display:flex;gap:4px} .qdots i{width:10px;height:10px;border-radius:50%;background:var(--line)} .qdots i.on{background:#FFC800}
+  .qcard .quests{padding:0 14px 14px}
+  .cv{color:var(--muted);font-size:12px}
+  .nextcard{display:flex;align-items:center;gap:14px;border-radius:20px;padding:14px 16px;background:color-mix(in srgb,var(--c) 12%,var(--surface));border:2px solid color-mix(in srgb,var(--c) 45%,transparent)}
+  .nc-ic{width:48px;height:48px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;flex:none}
+  .nc-ic svg{width:26px;height:26px}
+  .nc-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .nc-t b{font-size:16px;line-height:1.35}
+  .nc-t > span:last-child{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nc-k{font-size:11.5px;font-weight:900;color:var(--c)}
+  .nc-go{flex:none;border:0;border-radius:14px;padding:11px 16px;font-weight:900;color:#fff;background:var(--c);box-shadow:0 3px 0 color-mix(in srgb,var(--c) 70%,#000);cursor:pointer;font-family:var(--f-ui)}
+  .nc-go:active{transform:translateY(2px);box-shadow:0 1px 0 color-mix(in srgb,var(--c) 70%,#000)}
+  .clist{gap:6px!important}
+  .clevel{border-top:1px solid var(--line)} .clevel:first-of-type{border-top:0}
+  .crow{width:100%;display:grid;grid-template-columns:auto auto minmax(40px,1fr) auto auto;align-items:center;gap:10px;border:0;background:none;padding:10px 2px;cursor:pointer;color:var(--ink);text-align:left}
+  .cb{color:#fff;font-family:var(--f-word);font-weight:800;font-size:13px;border-radius:8px;padding:2px 8px}
+  .cn{font-size:13.5px;font-weight:800;white-space:nowrap}
+  .cn em{font-style:normal;font-size:10.5px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .cbar{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden} .cbar i{display:block;height:100%;border-radius:99px}
+  .cc{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .csteps{display:flex;flex-direction:column;gap:6px;padding:2px 0 12px}
+  .cstep{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:8px 10px;text-align:left;cursor:pointer;color:var(--ink)}
+  .cstep:hover{border-color:var(--accent)}
+  .cstep.now{border-color:var(--accent);background:var(--accent-soft)}
+  .ci{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--sunk);color:var(--c);font-weight:900}
+  .cstep.ok .ci{background:#FFC800;color:#fff} .cstep.now .ci{background:var(--c);color:#fff}
+  .ci svg{width:18px;height:18px}
+  .ct{display:flex;flex-direction:column;min-width:0} .ct b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .ct span{font-size:11.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cgo{font-size:12px;font-weight:900;color:var(--muted)} .cstep.now .cgo{color:var(--accent)}
+  .cmore{border:1.5px dashed var(--line);background:none;border-radius:12px;padding:7px;font-size:12.5px;font-weight:800;color:var(--muted);cursor:pointer}
+  @media (prefers-reduced-motion:reduce){.chest.ready{animation:none}}
   `;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -61,7 +74,7 @@
   const pad = n => String(n).padStart(2, '0');
   const dk = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   S.path = S.path || {};
-  ui.path = {open: {}, sel: null};
+  ui.path = {open: null, all: null, qopen: false};
 
   /* ---------- the path: nodes per level ---------- */
   const SIZE = 50;
@@ -97,25 +110,41 @@
     const nx = LEVELS[LEVELS.indexOf(n.L) + 1];
     return {title: nx ? `${n.L} → ${nx} 昇格テスト` : 'C2 修了', sub: nx ? '80点で次のレベルへ' : '最高レベルです', icon: TROPHY, cta: nx ? (S.lv ? '昇格テストに挑戦' : 'まず判定テストを受ける') : 'おめでとう！'};
   }
-  const OFF = [0, 46, 72, 46, 0, -46, -72, -46];
-  function section(L, open) {
-    const ns = nodesFor(L), done = ns.filter(isDone).length, j = window.LEVEL_JP?.[L] || {};
-    const next = ns.find(n => !isDone(n));
-    const head = `<button class="psec lv${L}" data-act="psec" data-l="${L}"><span><b>${L}</b><span>${j.school || ''} ・ 英検 ${j.eiken || '—'} ・ TOEIC ${j.toeic || '—'}</span></span><span class="pc">${done} / ${ns.length} ${open ? '▲' : '▼'}</span></button>`;
-    if (!open) return head;
-    return head + `<div class="path">${ns.map((n, k) => {
-      const d = isDone(n), nx = n === next, f = info(n), sel = ui.path.sel === n.key;
-      return `<div class="pnode ${d ? 'pdone' : nx ? 'pnext' : 'ptodo'} ${sel ? 'sel' : ''}" id="pn-${n.key.replace(/[^a-z0-9-]/gi, '_')}" style="--x:${OFF[k % OFF.length]}px">
-        ${nx && !sel ? '<span class="pstart">スタート</span>' : ''}
-        <button class="pbtn ${n.t === 'c' ? 'pcheck' : ''}" style="background:${COLORS[L]}" data-act="psel" data-k="${n.key}" aria-label="${esc(f.title)}">${f.icon || ''}</button>
-        ${sel ? `<div class="ppop" style="background:${d ? '#E5A100' : COLORS[L]}"><b>${esc(f.title)}</b><span>${esc(f.sub)}${d ? ' ・ 完了済み' : ''}</span><button style="color:${d ? '#E5A100' : COLORS[L]}" data-act="pgo" data-k="${n.key}">${d && n.t !== 'c' ? 'もう一度練習する' : esc(f.cta)}</button></div>` : ''}
-      </div>`;
-    }).join('')}</div>`;
+  // compact course list: one "next lesson" card + one row per level; a level opens into a short list of steps
+  const SHORT = {A1: '中学英語', A2: '高校基礎', B1: '高校卒業', B2: '大学・中上級', C1: '上級', C2: 'ネイティブ級'};
+  function nextNode() {
+    const start = LEVELS.indexOf(curLevel());
+    for (let i = start; i < LEVELS.length; i++) { const n = nodesFor(LEVELS[i]).find(x => !isDone(x)); if (n) return n; }
+    return null;
+  }
+  const TYPE = {g: '文法', w: '単語', s: '会話', c: 'テスト'};
+  function stepRow(n, isNext) {
+    const d = isDone(n), f = info(n);
+    return `<button class="cstep ${d ? 'ok' : ''} ${isNext ? 'now' : ''}" data-act="pgo" data-k="${n.key}">
+      <span class="ci" style="--c:${COLORS[n.L]}">${d ? '✓' : f.icon}</span>
+      <span class="ct"><b>${esc(f.title)}</b><span>${n.t === 'w' ? '単語 ・ ' : ''}${esc(f.sub)}</span></span>
+      <span class="cgo">${isNext ? 'スタート' : d ? '復習' : '›'}</span></button>`;
   }
   function vPath() {
-    const cur = curLevel();
-    if (ui.path.open[cur] === undefined) ui.path.open[cur] = true;
-    return `<div class="panel" style="gap:12px">${LEVELS.map(L => section(L, !!ui.path.open[L])).join('')}</div>`;
+    const nx = nextNode(), f = nx && info(nx);
+    const hero = nx ? `<section class="nextcard" style="--c:${COLORS[nx.L]}">
+        <span class="nc-ic">${f.icon}</span>
+        <span class="nc-t"><span class="nc-k">次のレッスン ・ ${nx.L} ${TYPE[nx.t]}</span><b>${esc(f.title)}</b><span>${esc(f.sub)}</span></span>
+        <button class="nc-go" data-act="pgo" data-k="${nx.key}">はじめる</button></section>`
+      : `<section class="nextcard" style="--c:#FFC800"><span class="nc-t"><b>全レベル修了！</b><span>復習したいレベルを下から選べます</span></span></section>`;
+    const rows = LEVELS.map(L => {
+      const ns = nodesFor(L), done = ns.filter(isDone).length, open = ui.path.open === L;
+      let list = '';
+      if (open) {
+        const ni = ns.findIndex(n => !isDone(n)), all = ui.path.all === L;
+        const from = all ? 0 : Math.max(0, (ni < 0 ? ns.length : ni) - 2), shown = all ? ns : ns.slice(from, from + 8);
+        list = `<div class="csteps">${!all && from > 0 ? `<button class="cmore" data-act="pall" data-l="${L}">前の ${from} 件を表示</button>` : ''}${shown.map(n => stepRow(n, nx && n.key === nx.key)).join('')}${!all && from + 8 < ns.length ? `<button class="cmore" data-act="pall" data-l="${L}">残り ${ns.length - from - 8} 件を表示</button>` : ''}</div>`;
+      }
+      return `<div class="clevel ${open ? 'open' : ''}"><button class="crow" data-act="psec" data-l="${L}" aria-expanded="${open}">
+        <span class="cb" style="background:${COLORS[L]}">${L}</span><span class="cn">${SHORT[L]}${S.lv?.cur === L ? '<em>現在</em>' : ''}</span>
+        <span class="cbar"><i style="width:${done / ns.length * 100}%;background:${COLORS[L]}"></i></span><span class="cc">${done}/${ns.length}</span><span class="cv">${open ? '▴' : '▾'}</span></button>${list}</div>`;
+    }).join('');
+    return `${hero}<section class="sheet panel clist"><div class="row" style="justify-content:space-between"><b>コース（A1〜C2）</b><span class="small muted">文法・単語・会話・テスト</span></div>${rows}</section>`;
   }
 
   /* ---------- lessons started from the path ---------- */
@@ -131,7 +160,6 @@
   }
   function go(key) {
     const L = LEVELS.find(l => nodesFor(l).some(n => n.key === key)), n = nodesFor(L).find(x => x.key === key);
-    ui.path.sel = null;
     if (n.t === 'g') {
       if (!S.course?.[n.g.id]) { ui.cs.lv = L; ui.cs.unit = n.g.id; ACT.tab({tab: 'course'}); return; }
       ACT.tab({tab: 'course'});
@@ -142,7 +170,7 @@
     } else if (n.t === 's') { ACT.tab({tab: 'situ'}); ACT.stopen({id: n.s.id}); }
     else if (LEVELS[LEVELS.indexOf(L) + 1]) { ACT.tab({tab: 'tests'}); ACT.ttstart({k: S.lv ? 'levelup' : 'place'}); }
   }
-  window.PATH_FOCUS = () => setTimeout(() => { const el = document.querySelector('.pnode.pnext'); if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'}); }, 80);
+  window.PATH_FOCUS = () => scrollTo(0, 0);
 
   /* ---------- daily quests ---------- */
   const POOL = [['correct', 20, '20問正解する', '🎯'], ['lesson', 2, 'レッスンを2つ完了する', '📘'], ['xp', 50, '50 XP 獲得する', '⚡'], ['cards', 20, '単語カードを20枚めくる', '🃏'], ['situ', 1, '会話ロールプレイを1回やる', '💬'], ['test', 1, 'テストを1回受ける', '📝'], ['combo', 5, '5問連続で正解する', '🔥'], ['perfect', 1, 'レッスンを全問正解する', '🏆']];
@@ -163,33 +191,31 @@
   if (window.SFX) { const ok0 = SFX.ok.bind(SFX); SFX.ok = function () { ok0(); bump('correct'); bump('combo', SFX.combo, true); }; }
   addEventListener('lessondone', e => { bump('lesson'); if (e.detail.p === 100) bump('perfect'); });
   function vQuests() {
-    const q = quest();
-    return `<section class="sheet panel" style="gap:12px"><div class="row" style="justify-content:space-between"><b>デイリークエスト</b><span class="small muted">毎日0時に新しいクエスト</span></div>
-      <div class="quests">${q.items.map(k => { const [, goal, label, ic] = POOL.find(p => p[0] === k), v = Math.min(goal, q.prog[k] || 0), got = q.claimed.includes(k), ready = v >= goal && !got;
-        return `<div class="qrow"><span class="ic">${ic}</span><div><div class="t">${label}</div><div class="qbar"><i style="width:${v / goal * 100}%"></i><em>${v} / ${goal}</em></div></div><button class="chest ${got ? 'got' : ready ? 'ready' : ''}" data-act="qclaim" data-k="${k}" ${ready ? '' : 'disabled'} aria-label="${ready ? '報酬を受け取る' : got ? '受け取り済み' : '未達成'}">${got ? '✅' : '🎁'}</button></div>`; }).join('')}</div></section>`;
+    const q = quest(), rows = q.items.map(k => { const [, goal, label, ic] = POOL.find(p => p[0] === k), v = Math.min(goal, q.prog[k] || 0); return {k, goal, label, ic, v, got: q.claimed.includes(k), ready: v >= goal && !q.claimed.includes(k)}; });
+    const fin = rows.filter(r => r.v >= r.goal).length, ready = rows.some(r => r.ready), open = ui.path.qopen || ready;
+    return `<section class="qcard"><button class="qhead" data-act="qtoggle" aria-expanded="${open}"><span>🎯 デイリークエスト</span><span class="qdots">${rows.map(r => `<i class="${r.v >= r.goal ? 'on' : ''}"></i>`).join('')}</span><span class="small muted">${fin}/3 ${ready ? '・ <b style="color:#E5A100">報酬あり</b>' : ''}</span><span class="cv">${open ? '▴' : '▾'}</span></button>
+      ${open ? `<div class="quests">${rows.map(r => `<div class="qrow"><span class="ic">${r.ic}</span><div><div class="t">${r.label}</div><div class="qbar"><i style="width:${r.v / r.goal * 100}%"></i><em>${r.v} / ${r.goal}</em></div></div><button class="chest ${r.got ? 'got' : r.ready ? 'ready' : ''}" data-act="qclaim" data-k="${r.k}" ${r.ready ? '' : 'disabled'} aria-label="${r.ready ? '報酬を受け取る' : r.got ? '受け取り済み' : '未達成'}">${r.got ? '✅' : '🎁'}</button></div>`).join('')}</div>` : ''}</section>`;
   }
 
   /* ---------- top stats ---------- */
   function streak() { let n = 0; const d = new Date(); if (!S.log?.[dk(d)]?.xp) d.setDate(d.getDate() - 1); while (S.log?.[dk(d)]?.xp) { n++; d.setDate(d.getDate() - 1); } return n; }
   function vStats() {
     const xp = S.log?.[dk()]?.xp || 0, goal = S.goal || 50, sk = streak();
-    const mon = new Date(); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
-    const week = [...Array(7)].map((_, i) => { const d = new Date(mon); d.setDate(mon.getDate() + i); const on = !!S.log?.[dk(d)]?.xp, today = dk(d) === dk(); return `<i class="${on ? 'on' : ''} ${today ? 'today' : ''}">${'月火水木金土日'[i]}</i>`; }).join('');
     const days = S.exam?.date ? Math.ceil((new Date(S.exam.date) - new Date(new Date().toDateString())) / 864e5) : null;
-    return `<div class="hstats">
-      <div class="hs fire"><span>連続記録</span><b>🔥 ${sk}日</b><div class="week">${week}</div></div>
-      <div class="hs xp"><span>今日のXP</span><b>⚡ ${xp}<small style="font-size:13px;color:var(--muted)"> / ${goal}</small></b><div class="mini"><i style="width:${Math.min(100, xp / goal * 100)}%"></i></div></div>
-      <button class="hs lv" data-act="tab" data-tab="tests"><span>現在レベル</span><b>${S.lv ? S.lv.cur : '—'}</b><span>${S.lv ? 'テスト・昇格へ' : '判定テストを受ける'}</span></button>
-      ${days != null && days >= 0 ? `<div class="hs exam"><span>試験まで</span><b>${days}日</b><span>IELTS ${(S.exam?.target || 6.5).toFixed(1)} 目標</span></div>` : `<button class="hs exam" data-act="tab" data-tab="hub-record"><span>試験日</span><b style="font-size:16px">未設定</b><span>記録・設定で登録</span></button>`}
+    return `<div class="chips-top">
+      <span class="ctop fire" title="連続記録">🔥 <b>${sk}</b>日</span>
+      <span class="ctop xp" title="今日のXP">⚡ <b>${xp}</b>/${goal}<i style="--p:${Math.min(100, xp / goal * 100)}%"></i></span>
+      <button class="ctop lv" data-act="tab" data-tab="tests" title="現在レベル">Lv <b>${S.lv ? S.lv.cur : '—'}</b></button>
+      ${days != null && days >= 0 ? `<span class="ctop ex" title="試験まで">📅 あと<b>${days}</b>日</span>` : ''}
     </div>`;
   }
 
   window.PATH = {stats: vStats, quests: vQuests, path: vPath};
   Object.assign(ACT, {
-    psec: x => { ui.path.open[x.l] = !ui.path.open[x.l]; render(); },
-    psel: x => { ui.path.sel = ui.path.sel === x.k ? null : x.k; render(); },
+    psec: x => { ui.path.open = ui.path.open === x.l ? null : x.l; ui.path.all = null; render(); },
+    pall: x => { ui.path.all = x.l; render(); },
+    qtoggle: () => { ui.path.qopen = !ui.path.qopen; render(); },
     pgo: x => go(x.k),
     qclaim: x => { const q = quest(); if (q.claimed.includes(x.k)) return; q.claimed.push(x.k); baseXP?.(10, 'quest'); bump('xp', 10); save(); window.CONFETTI?.(70); render(); },
   });
-  document.addEventListener('click', e => { if (ui.path.sel && !e.target.closest('.pnode')) { ui.path.sel = null; if (S.tab === 'home') render(); } });
 })();

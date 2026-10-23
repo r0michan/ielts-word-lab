@@ -136,7 +136,7 @@
     if (ui.place) return baseHome();
     const p = homeParts();
     if (!window.PATH) return `${greet()}${html(p.hero)}${html(p.today)}<div class="hgrid">${html(p.ring)}${html(p.exam)}</div>${html(p.other)}`;
-    return `${PATH.stats()}${html(p.hero)}${PATH.quests()}${PATH.path()}${html(p.other)}
+    return `${PATH.stats()}${html(p.hero)}${PATH.path()}${PATH.quests()}${html(p.other)}
       <button class="morelink" data-act="tab" data-tab="hub-record">今日のおすすめ・試験日の設定・弱点レーダー・バッジ ${IC.chevron}</button>`;
   }
   function recordExtras() {

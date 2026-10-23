@@ -632,12 +632,12 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['plan','1年プラン',1,'learn'],['ewrite','短い作文',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['card','単語カード',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['plan','1年プラン',1,'learn'],['ewrite','短い作文',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
   ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','スコア換算・試験比較',1,'exam'],['tests','デイリー・週間・月間テスト',1,'both'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 // Two-level navigation: mode → group pills → the group's tabs. A tab may sit in both modes (e.g. テスト, 記録).
 const NAV = {
-  learn: [['home', 'ホーム', ['home']], ['words', '単語', ['card', 'quiz', 'vocab', 'images', 'list']], ['grammar', '文法・表現', ['lessons', 'sent', 'expr', 'japan']],
+  learn: [['home', 'ホーム', ['home']], ['words', '単語', ['quiz', 'vocab', 'images', 'list']], ['grammar', '文法・表現', ['lessons', 'sent', 'expr', 'japan']],
     ['ears', '聞く・話す', ['dict', 'pron']], ['tests', 'テスト', ['tests']], ['record', '記録・設定', ['notes', 'settings']]],
   exam: [['home', 'ホーム', ['home']], ['tests', 'テスト', ['tests', 'mock']], ['skills', '4技能', ['read', 'listen', 'write', 'speak']],
     ['exams', 'スコア・試験比較', ['score']], ['record', '記録・設定', ['notes', 'settings']]],
@@ -1608,6 +1608,8 @@ render();
 <script src="data/cambridge_a2.js"></script>
 <script src="data/cambridge_b1.js"></script>
 <script src="data/cambridge_b2.js"></script>
+<script src="data/cambridge_c1.js"></script>
+<script src="data/cambridge_c2.js"></script>
 <script src="js/cambridge.js"></script>
 <script src="data/grammar1.js"></script>
 <script src="data/grammar2.js"></script>
@@ -1631,5 +1633,11 @@ render();
 <script src="js/plan.js"></script>
 <script src="js/path.js"></script>
 <script src="js/shell.js"></script>
+<script src="data/exja_a1.js"></script>
+<script src="data/exja_a2.js"></script>
+<script src="data/exja_b1.js"></script>
+<script src="data/exja_b1_2.js"></script>
+<script src="data/exja_b1_3.js"></script>
+<script src="js/vocab2.js"></script>
 </body>
 </html>

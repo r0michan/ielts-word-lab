@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IELTS単語ラボ</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#D9506A">
+<meta name="theme-color" content="#5856E0">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400&family=Nunito:wght@600;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
@@ -309,6 +309,7 @@ select,input[type=text],input[type=search],input[type=password],textarea{border-
 @media (prefers-reduced-motion:reduce){.btn,.tab{transition:none}.btn:hover,.btn:active{transform:none}}
 </style>
 <link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/theme.css"><!-- 先に読んで配色のちらつきを防ぐ。末尾でもう一度読み、各モジュールのスタイルより優先させる -->
 </head>
 <body>
 <div class="wrap">
@@ -632,7 +633,7 @@ function renderFilters() {
 // AI correction (Claude API) is built but switched off: the user chose not to use an API. Set to true to show it again.
 const AI_ENABLED = false;
 // [key, label, isNew, group] — group: both = always shown, learn = 学ぶモード, exam = 試験対策モード
-const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['plan','1年プラン',1,'learn'],['ewrite','短い作文',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
+const TABS = [['home','ホーム',0,'both'],['lessons','レッスン',0,'learn'],['course','レベル別コース',1,'learn'],['plan','学習プラン',1,'learn'],['ewrite','短い作文',1,'learn'],['situ','シチュエーション会話',1,'learn'],['images','イメージ図鑑',0,'learn'],['quiz','クイズ',0,'learn'],['dict','ディクテーション',0,'learn'],['vocab','語彙ドリル',1,'learn'],['sent','文トレ',0,'learn'],['expr','表現・イディオム',0,'learn'],['japan','日本人の弱点',0,'learn'],['pron','発音練習',0,'learn'],['list','単語帳',0,'learn'],
   ['mock','模擬試験',0,'exam'],['read','読解',0,'exam'],['listen','リスニング',0,'exam'],['write','ライティング',0,'exam'],['speak','スピーキング',0,'exam'],['score','スコア換算・試験比較',1,'exam'],['tests','デイリー・週間・月間テスト',1,'both'],
   ['notes','間違いノート',0,'both'],['settings','設定・追加',0,'both']];
 // Two-level navigation: mode → group pills → the group's tabs. A tab may sit in both modes (e.g. テスト, 記録).
@@ -1639,5 +1640,7 @@ render();
 <script src="data/exja_b1_2.js"></script>
 <script src="data/exja_b1_3.js"></script>
 <script src="js/vocab2.js"></script>
+<script src="js/ui2.js"></script>
+<link rel="stylesheet" href="css/theme.css">
 </body>
 </html>

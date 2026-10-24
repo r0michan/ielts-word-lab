@@ -41,7 +41,7 @@
   const DEST = [['home', 'ホーム'], ['learn', '学ぶ'], ['exam', '試験対策'], ['tests', 'テスト'], ['record', '記録']];
   const HUBS = {
     learn: {title: '学ぶ', lead: '単語・文法・発音を、自分のペースで積み上げる', groups: [
-      ['レベル別コース', [['plan', '1年プラン（B2まで）', '今のレベルから月ごとの目標と毎週やることを自動で作成'], ['course', 'レベル別コース（A1〜C2）', '文法ユニット・単語帳・パート別練習。中学〜大学・英検・TOEIC の目安つき']]],
+      ['レベル別コース', [['plan', '学習プラン（B2まで）', '1日の勉強時間から、月ごとの目標と毎週やることを自動で作成'], ['course', 'レベル別コース（A1〜C2）', '文法ユニット・単語帳・パート別練習。中学〜大学・英検・TOEIC の目安つき']]],
       ['単語', [['quiz', '単語クイズ＋苦手リスト', '解けなかった単語だけを繰り返して確実に覚える'], ['vocab', '語彙ドリル', '言い換え・コロケーション・品詞・つづり・トピック'], ['images', 'イメージ図鑑', '前置詞・時制・冠詞を図で理解'], ['list', '単語帳', '5,000語の検索と進み具合']]],
       ['文法・表現', [['lessons', 'レッスン', '文法と表現を順番に学ぶ'], ['sent', '文トレ', '構文の並べ替え・穴埋め・音読'], ['expr', '表現・イディオム', '国ごとの言い方・会話表現・スラング'], ['japan', '日本人の弱点', 'L/R・和製英語・間違えやすい文']]],
       ['書く', [['ewrite', '短い作文（A1〜B2）', 'レベル別のお題・自動チェック・模範解答で自己添削']]],
@@ -106,9 +106,16 @@
     return '';
   }
   const tile = ([k, t, d]) => `<button class="tile" data-act="tab" data-tab="${k}"><span class="tile-ic ic-${k}">${IC[k] || IC.learn}</span><span class="tile-tx"><b>${esc(t)}</b><span>${esc(d)}</span></span>${stat(k)}<span class="chev">${IC.chevron}</span></button>`;
+  const GC = {'レベル別コース': '#15A05A', '単語': '#F2762E', '文法・表現': '#5856E0', '書く': '#B0479E', '聞く・話す': '#0E8FB8', '本番形式': '#C9740A', '4技能': '#C9740A', '情報': '#646B82', '復習と設定': '#646B82'};
+  // 「何から始めればいい？」に答える4ステップ
+  const steps = () => `<section class="hubgroup"><h2 class="gtitle"><i></i>迷ったらこの順番<small>毎日 30分の目安</small></h2><div class="steps">
+    <button class="stp" data-act="tab" data-tab="home"><b>レッスン</b><span>ホームの「次のレッスン」</span></button>
+    <button class="stp" data-act="tab" data-tab="quiz"><b>単語クイズ</b><span>苦手リストを空に</span></button>
+    <button class="stp" data-act="tab" data-tab="situ"><b>会話を声に出す</b><span>旅行・生活の場面</span></button>
+    <button class="stp" data-act="tab" data-tab="tests"><b>テストで確認</b><span>デイリー → 週間</span></button></div></section>`;
   const hub = key => () => {
     const h = HUBS[key];
-    return `<p class="lead">${h.lead}</p>${h.groups.map(([g, items]) => `<section class="hubgroup"><h2 class="gtitle">${g}</h2><div class="tiles">${items.map(tile).join('')}</div></section>`).join('')}
+    return `<p class="lead">${h.lead}</p>${key === 'learn' ? steps() : ''}${h.groups.map(([g, items]) => `<section class="hubgroup"><h2 class="gtitle" style="--gc:${GC[g] || 'var(--accent)'}"><i></i>${g}<small>${items.length}</small></h2><div class="tiles">${items.map(tile).join('')}</div></section>`).join('')}
       ${key === 'record' ? recordExtras() : ''}`;
   };
 

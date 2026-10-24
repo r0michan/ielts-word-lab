@@ -32,8 +32,6 @@
   .ctop.fire b{color:#FF9600} .ctop.xp b{color:#E5A100} .ctop.lv{cursor:pointer} .ctop.lv b{color:var(--accent)} .ctop.ex b{color:var(--c3)}
   .ctop.xp i{position:absolute;left:0;bottom:0;height:3px;width:var(--p);background:#FFC800}
   .qcard{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;overflow:hidden}
-  .qhead{width:100%;display:flex;align-items:center;gap:10px;border:0;background:none;padding:12px 14px;cursor:pointer;font-weight:800;font-size:14px;text-align:left;color:var(--ink)}
-  .qhead > span:first-child{flex:1}
   .qdots{display:flex;gap:4px} .qdots i{width:10px;height:10px;border-radius:50%;background:var(--line)} .qdots i.on{background:#FFC800}
   .qcard .quests{padding:0 14px 14px}
   .cv{color:var(--muted);font-size:12px}
@@ -108,7 +106,7 @@
     if (n.t === 'w') { const ws = WORDS.filter(w => w.lv === n.L).slice(n.u * SIZE, n.u * SIZE + SIZE); return {title: `単語 ${n.L} Unit ${n.u + 1}`, sub: `${ws[0]?.w || ''} 〜 ${ws[ws.length - 1]?.w || ''}（${ws.length}語）`, icon: IC.card, cta: 'レッスン開始 +15 XP'}; }
     if (n.t === 's') return {title: n.s.title, sub: `会話ロールプレイ ・ ${n.s.place}`, icon: IC.situ, cta: '会話を練習する +5 XP'};
     const nx = LEVELS[LEVELS.indexOf(n.L) + 1];
-    return {title: nx ? `${n.L} → ${nx} 昇格テスト` : 'C2 修了', sub: nx ? '80点で次のレベルへ' : '最高レベルです', icon: TROPHY, cta: nx ? (S.lv ? '昇格テストに挑戦' : 'まず判定テストを受ける') : 'おめでとう！'};
+    return {title: nx ? `${n.L} → ${nx} 昇格テスト` : 'C2 修了', sub: nx ? '試験形式の模試で60%以上なら次のレベルへ' : '最高レベルです', icon: TROPHY, cta: nx ? (S.lv ? '昇格テストに挑戦' : 'まず判定テストを受ける') : 'おめでとう！'};
   }
   // compact course list: one "next lesson" card + one row per level; a level opens into a short list of steps
   const SHORT = {A1: '中学英語', A2: '高校基礎', B1: '高校卒業', B2: '大学・中上級', C1: '上級', C2: 'ネイティブ級'};
@@ -125,7 +123,7 @@
       <span class="ct"><b>${esc(f.title)}</b><span>${n.t === 'w' ? '単語 ・ ' : ''}${esc(f.sub)}</span></span>
       <span class="cgo">${isNext ? 'スタート' : d ? '復習' : '›'}</span></button>`;
   }
-  function vPath() {
+  function vPath(opt = {}) {
     const nx = nextNode(), f = nx && info(nx);
     const hero = nx ? `<section class="nextcard" style="--c:${COLORS[nx.L]}">
         <span class="nc-ic">${f.icon}</span>
@@ -144,7 +142,7 @@
         <span class="cb" style="background:${COLORS[L]}">${L}</span><span class="cn">${SHORT[L]}${S.lv?.cur === L ? '<em>現在</em>' : ''}</span>
         <span class="cbar"><i style="width:${done / ns.length * 100}%;background:${COLORS[L]}"></i></span><span class="cc">${done}/${ns.length}</span><span class="cv">${open ? '▴' : '▾'}</span></button>${list}</div>`;
     }).join('');
-    return `${hero}<section class="sheet panel clist"><div class="row" style="justify-content:space-between"><b>コース（A1〜C2）</b><span class="small muted">文法・単語・会話・テスト</span></div>${rows}</section>`;
+    return `${opt.noHero ? '' : hero}<section class="sheet panel clist">${opt.noHero ? '' : '<div class="row" style="justify-content:space-between"><b>コース（A1〜C2）</b><span class="small muted">文法・単語・会話・テスト</span></div>'}${rows}</section>`;
   }
 
   /* ---------- lessons started from the path ---------- */
@@ -173,7 +171,7 @@
   window.PATH_FOCUS = () => scrollTo(0, 0);
 
   /* ---------- daily quests ---------- */
-  const POOL = [['correct', 20, '20問正解する', '🎯'], ['lesson', 2, 'レッスンを2つ完了する', '📘'], ['xp', 50, '50 XP 獲得する', '⚡'], ['cards', 20, '単語カードを20枚めくる', '🃏'], ['situ', 1, '会話ロールプレイを1回やる', '💬'], ['test', 1, 'テストを1回受ける', '📝'], ['combo', 5, '5問連続で正解する', '🔥'], ['perfect', 1, 'レッスンを全問正解する', '🏆']];
+  const POOL = [['correct', 20, '20問正解する', '🎯'], ['lesson', 2, 'レッスンを2つ完了する', '📘'], ['xp', 50, '50 XP 獲得する', '⚡'], ['cards', 20, '単語クイズに20問答える', '❓'], ['situ', 1, '会話ロールプレイを1回やる', '💬'], ['test', 1, 'テストを1回受ける', '📝'], ['combo', 5, '5問連続で正解する', '🔥'], ['perfect', 1, 'レッスンを全問正解する', '🏆']];
   function quest() {
     const d = dk();
     if (S.quest?.d !== d) {
@@ -187,13 +185,13 @@
   const bump = (k, n = 1, max = false) => { const q = quest(); q.prog[k] = max ? Math.max(q.prog[k] || 0, n) : (q.prog[k] || 0) + n; saveSoon(); };
   const baseXP = window.addXP;
   window.addXP = (n, cat) => { baseXP?.(n, cat); bump('xp', n); if (cat === 'situ') bump('situ'); if (cat === 'test') bump('test'); };
-  const prevGrade = grade; grade = function (id, ok) { bump('cards'); return prevGrade.apply(this, arguments); };
+  const prevAQ = answerQuiz; answerQuiz = function () { bump('cards'); return prevAQ.apply(this, arguments); };
   if (window.SFX) { const ok0 = SFX.ok.bind(SFX); SFX.ok = function () { ok0(); bump('correct'); bump('combo', SFX.combo, true); }; }
   addEventListener('lessondone', e => { bump('lesson'); if (e.detail.p === 100) bump('perfect'); });
   function vQuests() {
     const q = quest(), rows = q.items.map(k => { const [, goal, label, ic] = POOL.find(p => p[0] === k), v = Math.min(goal, q.prog[k] || 0); return {k, goal, label, ic, v, got: q.claimed.includes(k), ready: v >= goal && !q.claimed.includes(k)}; });
     const fin = rows.filter(r => r.v >= r.goal).length, ready = rows.some(r => r.ready), open = ui.path.qopen || ready;
-    return `<section class="qcard"><button class="qhead" data-act="qtoggle" aria-expanded="${open}"><span>🎯 デイリークエスト</span><span class="qdots">${rows.map(r => `<i class="${r.v >= r.goal ? 'on' : ''}"></i>`).join('')}</span><span class="small muted">${fin}/3 ${ready ? '・ <b style="color:#E5A100">報酬あり</b>' : ''}</span><span class="cv">${open ? '▴' : '▾'}</span></button>
+    return `<section class="qcard"><button class="qhd" data-act="qtoggle" aria-expanded="${open}"><span>🎯 デイリークエスト</span><span class="qdots">${rows.map(r => `<i class="${r.v >= r.goal ? 'on' : ''}"></i>`).join('')}</span><span class="small muted">${fin}/3 ${ready ? '・ <b style="color:#E5A100">報酬あり</b>' : ''}</span><span class="cv">${open ? '▴' : '▾'}</span></button>
       ${open ? `<div class="quests">${rows.map(r => `<div class="qrow"><span class="ic">${r.ic}</span><div><div class="t">${r.label}</div><div class="qbar"><i style="width:${r.v / r.goal * 100}%"></i><em>${r.v} / ${r.goal}</em></div></div><button class="chest ${r.got ? 'got' : r.ready ? 'ready' : ''}" data-act="qclaim" data-k="${r.k}" ${r.ready ? '' : 'disabled'} aria-label="${r.ready ? '報酬を受け取る' : r.got ? '受け取り済み' : '未達成'}">${r.got ? '✅' : '🎁'}</button></div>`).join('')}</div>` : ''}</section>`;
   }
 
@@ -210,7 +208,7 @@
     </div>`;
   }
 
-  window.PATH = {stats: vStats, quests: vQuests, path: vPath};
+  window.PATH = {stats: vStats, quests: vQuests, path: vPath, next: nextNode, info, go, streak, quest, COLORS, TYPE};
   Object.assign(ACT, {
     psec: x => { ui.path.open = ui.path.open === x.l ? null : x.l; ui.path.all = null; render(); },
     pall: x => { ui.path.all = x.l; render(); },

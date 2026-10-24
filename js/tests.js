@@ -36,6 +36,19 @@
   .tbars{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:8px}
   .tbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;font-size:11px;color:var(--muted)}
   .tbars i{display:block;width:100%;max-width:38px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--accent),var(--c2))}
+  .upcard{position:relative;overflow:hidden;border-radius:22px;padding:18px 20px;background:var(--grad);color:#fff;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-lg)}
+  .upcard p{font-size:13.5px;line-height:1.7;opacity:.95} .upcard .small{opacity:.85}
+  .up-h{display:flex;align-items:baseline;gap:10px} .up-h b{font-family:var(--f-word);font-size:26px}
+  .up-k{font-size:12px;font-weight:900;background:rgba(255,255,255,.2);border-radius:999px;padding:2px 10px}
+  .upcard .btn{border:0} .up-go{background:#fff!important;color:#3E3BC4!important;box-shadow:0 6px 16px rgba(20,10,60,.2)} .up-alt{background:rgba(255,255,255,.16)!important;color:#fff!important}
+  .tlist{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .trow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
+  .trow:first-child{border-top:0}
+  .tic{width:42px;height:42px;border-radius:13px;background:var(--sunk);display:grid;place-items:center;font-size:20px}
+  .trow.done .tic{background:var(--good-soft)}
+  .ttx{display:flex;flex-direction:column;gap:3px;min-width:0} .ttx b{font-size:15px} .ttx > span{font-size:12px;color:var(--muted)}
+  .tact{display:flex;flex-direction:column;align-items:flex-end;gap:6px} .tact .st{font-size:12.5px;font-weight:900;color:var(--muted)}
+  .trow .tdots i{width:11px;height:11px;border-radius:3px}
   @media (max-width:480px){.lvbadge{width:76px;height:76px;font-size:32px;border-radius:22px}}
   `;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
@@ -286,14 +299,15 @@
     const cbv = window.CB_VIEW?.(); if (cbv) return cbv;
     if (!S.lv) return `<section class="sheet panel" style="gap:12px"><h2 style="font-size:20px">まず判定テストで現在レベルを決めましょう</h2>
         <p>A1〜C2 の各レベルから5問ずつ、全30問（約10分）。正答率 60% 以上のレベルを積み上げて、あなたの現在レベルを判定します。</p>
-        <ul class="small" style="margin:0;padding-left:1.2em;line-height:1.9"><li>デイリー・週間・マンスリーテストは、判定されたレベルの問題で出題されます</li><li>次のレベルへは「レベルアップテスト」で <b>${PASS}点以上</b> を取ると昇格</li><li>昇格から1か月以内の週間・マンスリーテストで <b>${FAIL}点以下</b> だと自動で降格</li></ul>
-        <div><button class="btn primary big" data-act="ttstart" data-k="place">判定テストを始める</button></div></section>`;
+        <ul class="small" style="margin:0;padding-left:1.2em;line-height:1.9"><li>デイリー・週間・マンスリーテストは、判定されたレベルの問題で出題されます</li><li>次のレベルへは「昇格テスト」で合格すると昇格（試験形式の模試なら <b>60%以上</b>、30問のクイック版なら <b>${PASS}点以上</b>）</li><li>昇格から1か月以内の週間・マンスリーテストで <b>${FAIL}点以下</b> だと自動で降格</li></ul>
+        <div><button class="btn primary big" data-act="ttstart" data-k="place">判定テストを始める</button></div></section>${window.CB_LIST ? CB_LIST() : ''}`;
     const T = S.tests, cur = S.lv.cur, L = testLv(), nx = nextLv(cur), e = eqOf(cur);
-    const card = kind => { const d = DEF[kind], rec = T[kind][d.key()];
-      return `<div class="tcard ${rec ? 'done' : ''}"><h3>${d.title} <span class="lv lv-${L[0]}">${L}</span></h3><span class="meta">${d.n}</span>
-        <span class="st ${rec ? (rec.p ?? pct(rec.s, rec.n)) >= 70 ? 'up' : (rec.p ?? pct(rec.s, rec.n)) <= FAIL ? 'dn' : '' : ''}">${rec ? `${kind === 'daily' ? '今日' : kind === 'weekly' ? '今週' : '今月'}：${rec.p ?? pct(rec.s, rec.n)}点` : kind === 'daily' ? '今日はまだ' : kind === 'weekly' ? '今週はまだ' : '今月はまだ'}</span>
-        ${kind === 'daily' ? `<div class="tdots" aria-label="過去14日">${[...Array(14)].map((_, i) => { const dd = new Date(); dd.setDate(dd.getDate() - 13 + i); const x = T.daily[dayKey(dd)], p = x ? (x.p ?? pct(x.s, x.n)) : null; return `<i class="${p == null ? '' : p >= 70 ? 'on' : p <= FAIL ? 'ng' : 'mid'}" title="${dayKey(dd)}${p != null ? ` ${p}点` : ''}"></i>`; }).join('')}</div>` : ''}
-        <div><button class="btn ${rec ? '' : 'primary'}" data-act="ttstart" data-k="${kind}">${rec ? 'もう一度' : 'はじめる'}</button></div></div>`; };
+    const card = kind => { const d = DEF[kind], rec = T[kind][d.key()], p = rec ? (rec.p ?? pct(rec.s, rec.n)) : null;
+      const when = kind === 'daily' ? '今日' : kind === 'weekly' ? '今週' : '今月';
+      return `<div class="trow ${rec ? 'done' : ''}"><span class="tic">${{daily: '📅', weekly: '🗓', monthly: '🏁'}[kind]}</span>
+        <span class="ttx"><b>${d.title}</b><span>${d.n} ・ ${L} の問題</span>
+        ${kind === 'daily' ? `<span class="tdots" aria-label="過去14日">${[...Array(14)].map((_, i) => { const dd = new Date(); dd.setDate(dd.getDate() - 13 + i); const x = T.daily[dayKey(dd)], q = x ? (x.p ?? pct(x.s, x.n)) : null; return `<i class="${q == null ? '' : q >= 70 ? 'on' : q <= FAIL ? 'ng' : 'mid'}" title="${dayKey(dd)}${q != null ? ` ${q}点` : ''}"></i>`; }).join('')}</span>` : ''}</span>
+        <span class="tact"><span class="st ${p == null ? '' : p >= 70 ? 'up' : p <= FAIL ? 'dn' : ''}">${p == null ? `${when}はまだ` : `${when} ${p}点`}</span><button class="btn ${rec ? '' : 'primary'}" data-act="ttstart" data-k="${kind}">${rec ? 'もう一度' : 'はじめる'}</button></span></div>`; };
     const lastUp = [...T.levelup].reverse().find(x => x.lv === nx);
     const daysLeft = onProbation() ? Math.ceil((S.lv.probUntil - Date.now()) / 864e5) : 0;
     const bars = list => `<div class="tbars">${list.map(([k, r]) => `<div><span>${r.p ?? pct(r.s, r.n)}</span><i style="height:${Math.max(4, r.p ?? pct(r.s, r.n))}%"></i><span>${esc(k.replace(/^\d{4}-/, ''))}${r.lv ? ' ' + r.lv : ''}</span></div>`).join('')}</div>`;
@@ -307,15 +321,12 @@
           </div></div>
         ${daysLeft ? `<div class="prob">昇格おめでとう！ あと ${daysLeft} 日間は「お試し期間」です。この間の週間・マンスリーテストで ${FAIL} 点以下を取ると ${S.lv.prev} に降格します。</div>` : ''}
       </section>
-      <div class="tcards">
-        <div class="tcard"><h3>レベルアップテスト ${nx ? `<span class="lv lv-${nx[0]}">${cur}→${nx}</span>` : ''}</h3>
-          ${nx ? `<span class="meta">${DEF.levelup.n}・${nx} レベルの問題で ${PASS} 点以上なら昇格</span>
-            <span class="st">${lastUp ? `前回：${lastUp.p}点（${lastUp.pass ? '合格' : '不合格'}）` : 'まだ挑戦していません'}</span>
-            ${window.CAMBRIDGE?.[nx] ? `<span class="small">おすすめ：${esc(CAMBRIDGE[nx].name)}の試験形式（ライティング・リスニング込み）で <b>60%以上</b>なら昇格（本試験の合格ラインと同じ）</span>` : ''}
-            <div class="row">${window.CAMBRIDGE?.[nx] ? `<button class="btn primary" data-act="cbstart" data-l="${nx}" data-m="levelup">試験形式で ${nx} に挑戦</button>` : ''}<button class="btn ${window.CAMBRIDGE?.[nx] ? '' : 'primary'}" data-act="ttstart" data-k="levelup">${window.CAMBRIDGE?.[nx] ? 'クイック版（30問）' : `${nx} に挑戦する`}</button></div>`
-          : `<span class="st up">最高レベル C2 に到達しています 🎉</span>`}</div>
-        ${card('daily')}${card('weekly')}${card('monthly')}
-      </div>
+      <section class="upcard">${nx ? `<div class="up-h"><span class="up-k">昇格テスト</span><b>${cur} → ${nx}</b></div>
+          <p>${window.CAMBRIDGE?.[nx] ? `<b>${esc(CAMBRIDGE[nx].name)}</b>の試験形式（読む・書く・聞く）で <b>60%以上</b>なら昇格。本試験の合格ラインと同じ基準です。` : `${nx} レベルの30問で ${PASS}点以上なら昇格。`}</p>
+          <span class="small">${lastUp ? `前回 ${lastUp.p}${lastUp.cb ? '%' : '点'}（${lastUp.pass ? '合格' : '不合格'}）` : 'まだ挑戦していません'}</span>
+          <div class="row">${window.CAMBRIDGE?.[nx] ? `<button class="btn up-go" data-act="cbstart" data-l="${nx}" data-m="levelup">試験形式で挑戦（約${CAMBRIDGE[nx].minutes}分）</button>` : ''}<button class="btn up-alt" data-act="ttstart" data-k="levelup">${window.CAMBRIDGE?.[nx] ? 'クイック版 30問' : `${nx} に挑戦する`}</button></div>`
+        : `<div class="up-h"><span class="up-k">最高レベル</span><b>C2 到達 🎉</b></div>`}</section>
+      <section class="sect"><div class="sect-h"><h3>定期テスト</h3><span>週間・マンスリーは降格判定あり</span></div><div class="tlist">${card('daily')}${card('weekly')}${card('monthly')}</div></section>
       ${window.CB_LIST ? CB_LIST() : ''}
       ${weeks.length ? `<section class="sheet panel" style="gap:6px"><b>週間テストの推移（点）</b>${bars(weeks)}</section>` : ''}
       ${months.length ? `<section class="sheet panel" style="gap:6px"><b>マンスリーテストの推移（点）</b>${bars(months)}</section>` : ''}

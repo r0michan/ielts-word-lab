@@ -76,6 +76,12 @@
   ui.cs = {lv: null, seg: 'grammar', unit: null, step: 0, run: null, wunit: null, sheet: true, reveal: {}};
   const curLv = () => ui.cs.lv || S.lv?.cur || S.place?.lvl || 'A1';
   const XP = n => window.addXP?.(n, 'course');
+  function linkFull(q) {
+    const low = t => t.toLowerCase().replace(/[^a-z']/g, '');
+    const ans = new Set(String(q.ans || '').split(/\s+/).map(low).filter(Boolean));
+    const clues = new Set((String(q.why || '').match(/[A-Za-z][A-Za-z']*/g) || []).map(low).filter(w => (w.length > 1 || w === 'i') && !ans.has(w)));
+    return q.full.split(/(\s+)/).map(t => { const k = low(t); if (/^\s+$/.test(t) || !k) return esc(t); return ans.has(k) ? `<span class="lk1">${esc(t)}</span>` : clues.has(k) ? `<span class="lk2">${esc(t)}</span>` : esc(t); }).join('');
+  }
   const sfx = ok => ok ? window.SFX?.ok() : window.SFX?.ng();
 
   /* ---------- answer checking for written (記述) questions ---------- */
@@ -102,7 +108,7 @@
     let body = '', fb = '', foot = '';
     if (q.type === 'mc') {
       body = `${q.lead ? `<div class="lsn-lead">${q.lead}</div>` : ''}${q.prompt ? `<div class="lsn-q">${q.prompt}</div>` : ''}<div class="lsn-opts">${q.opts.map((o, j) => `<button class="lsn-opt ${q.ja ? '' : 'en'} ${res ? (o === q.ans ? 'ok' : j === res.pick ? 'ng' : 'dim') : ''}" data-act="crpick" data-i="${j}" ${res ? 'disabled' : ''}><span class="k">${j + 1}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
-      if (res) fb = sheet(res.ok, res.ok ? pick(['正解！', 'すばらしい！', 'その調子！', 'カンペキ！']) : '正解は…', `${res.ok ? '' : `<div class="lsn-ans">${esc(q.ans)}</div>`}${q.full ? `<div class="lsn-full"><span class="ex">${esc(q.full)}</span>${sayBtn(q.full, '')}</div>` : ''}${q.why ? `<div class="lsn-why">${esc(q.why)}</div>` : ''}`, next);
+      if (res) fb = sheet(res.ok, res.ok ? pick(['正解！', 'すばらしい！', 'その調子！', 'カンペキ！']) : '正解は…', `${res.ok ? '' : `<div class="lsn-ans">${esc(q.ans)}</div>`}${q.full ? `<div class="lsn-full"><span class="ex">${linkFull(q)}</span>${sayBtn(q.full, '')}</div>` : ''}${q.why ? `<div class="lsn-why">${esc(q.why)}</div>` : ''}${q.full && /lk2/.test(linkFull(q)) ? '<div class="lsn-key"><i class="a"></i>答え <i class="c"></i>答えを決める手がかり</div>' : ''}`, next);
     } else if (q.type === 'write') {
       body = `<div class="lsn-lead">英語にしてください${q.hint ? `<span class="muted">（${esc(q.hint)}）</span>` : ''}</div><div class="lsn-q" style="font-family:var(--f-ui);font-weight:800">${esc(q.ja)}</div>
         <form data-form="crwrite"><textarea id="crin" rows="3" class="lsn-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ここに英語で入力" ${res ? 'readonly' : ''}>${esc(res?.typed || '')}</textarea></form>`;

@@ -54,6 +54,14 @@
       <button class="morelink" data-act="tab" data-tab="hub-record">学習の記録・試験日の設定・弱点レーダー ${SHELL_ICON.chevron}</button>`;
   }
 
+  // 上部バーに効果音のオン・オフ
+  const SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/>', ON = '<path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>', OFF = '<path d="m22 9-6 6M16 9l6 6"/></svg>';
+  const prevTabs = renderTabs;
+  renderTabs = function () {
+    prevTabs.apply(this, arguments);
+    const r = document.querySelector('#appbar .appbar-r'), on = S.settings.sfxOn !== false;
+    if (r) r.insertAdjacentHTML('afterbegin', `<button class="iconbtn sfxbtn ${on ? '' : 'off'}" data-act="sfxmute" aria-pressed="${on}" aria-label="効果音を${on ? 'オフ' : 'オン'}にする" title="効果音 ${on ? 'オン' : 'オフ'}">${SPK}${on ? ON : OFF}</button>`);
+  };
   window.EXTRA_VIEWS = {...window.EXTRA_VIEWS, home: vHome};
   Object.assign(ACT, {
     hmiss: () => { ACT.tab({tab: 'quiz'}); ACT.qmiss({mode: 'meaning'}); },

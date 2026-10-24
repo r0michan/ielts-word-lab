@@ -1,37 +1,58 @@
 /* 効果音とお祝い演出（効果音は初期設定でオフ。設定でオンにした人だけ鳴る。紙吹雪などの見た目の演出はそのまま）。音はすべて Web Audio で合成（音声ファイル不要・オフラインで動く）。
    正解：コンボが続くほど音が上がるチャイム ／ 不正解：やわらかい低音 ／ 合格・満点・昇格：ファンファーレ＋紙吹雪。設定でオフにできる。 */
+/* 効果音とお祝い演出。音はすべて Web Audio で合成（音声ファイル不要・オフラインで動く）。
+   正解：明るい2音のチャイム（連続正解で少しずつ音が上がる） ／ 不正解：短くやわらかい「ブブッ」 ／ ページを進める：小さな「ポッ」
+   合格・満点・昇格：ファンファーレ＋紙吹雪。上部バーのスピーカーボタンと「設定」でオン・オフ、音量を変えられる。 */
 (() => {
-  S.settings.sfx = S.settings.sfxOptIn === true;   // sound only after the learner turns it on in 設定
-  let ctx = null, combo = 0;
-  const ac = () => { if (!ctx) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ctx = new A(); } if (ctx.state === 'suspended') ctx.resume(); return ctx; };
-  // one soft bell-like note: sine + a quiet octave, fast attack, exponential decay
-  function note(freq, t0, dur = .35, vol = .18, type = 'sine') {
+  const set = S.settings;
+  if (set.sfxOn == null) set.sfxOn = true;          // 初期設定でオン（上部バーからすぐ消せる）
+  if (set.sfxPage == null) set.sfxPage = true;
+  if (set.sfxVol == null) set.sfxVol = .7;
+  let ctx = null, master = null, combo = 0;
+  const ac = () => {
+    if (!ctx) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ctx = new A(); master = ctx.createGain(); master.connect(ctx.destination); }
+    if (ctx.state === 'suspended') ctx.resume();
+    master.gain.value = set.sfxVol; return ctx;
+  };
+  // one tone: fast attack, exponential decay; optional pitch glide and soft overtone
+  function tone(freq, t0, dur, vol, {type = 'sine', to = 0, over = .22, lp = 0} = {}) {
     const c = ac(); if (!c) return; const t = c.currentTime + t0;
-    [[freq, vol, type], [freq * 2, vol * .25, 'sine']].forEach(([f, v, ty]) => {
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = ty; o.frequency.setValueAtTime(f, t);
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-      o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .05);
+    [[freq, vol, type], over ? [freq * 2, vol * over, 'sine'] : null].filter(Boolean).forEach(([f, v, ty], k) => {
+      const o = c.createOscillator(), g = c.createGain(); let out = g;
+      o.type = ty; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to * (k ? 2 : 1), t + dur * .6);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g);
+      if (lp) { const f2 = c.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = lp; g.connect(f2); out = f2; }
+      out.connect(master); o.start(t); o.stop(t + dur + .05);
     });
   }
-  const on = () => S.settings.sfxOptIn === true;
+  const on = () => set.sfxOn !== false;
   const buzz = ms => { try { navigator.vibrate?.(ms); } catch (e) {} };
-  const SCALE = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51];   // C major pentatonic-ish climb
+  const STEP = [0, 2, 4, 5, 7, 9, 11, 12];            // 連続正解でドレミ…と上がる
+  const semi = (f, n) => f * Math.pow(2, n / 12);
 
   window.SFX = {
     ok() {
       combo++;
       if (combo === 5 || combo === 10 || combo === 20) { this.toastCombo(combo); burst(combo >= 10 ? 60 : 30); }
       if (!on()) return;
-      const base = SCALE[Math.min(combo - 1, SCALE.length - 2)];
-      note(base, 0, .22, .16); note(base * 1.5, .07, .32, .14);
-      if (combo >= 3) note(base * 2, .14, .4, .1);
-      buzz(12);
+      const b = semi(880, STEP[Math.min(combo - 1, STEP.length - 1)]);     // A5 から
+      tone(b, 0, .16, .2, {type: 'triangle', over: .3});
+      tone(semi(b, 7), .085, .42, .2, {type: 'triangle', over: .3});       // 5度上でキラッと
+      if (combo >= 3) tone(semi(b, 12), .17, .5, .09);
+      buzz(10);
     },
-    ng() { combo = 0; if (!on()) return; note(196, 0, .28, .14, 'triangle'); note(174.6, .1, .32, .1, 'triangle'); buzz([20, 40, 20]); },
-    pop() { if (!on()) return; note(880, 0, .12, .1); },
+    ng() {
+      combo = 0; if (!on()) return;
+      tone(233, 0, .13, .17, {type: 'square', over: 0, lp: 900});
+      tone(196, .15, .22, .17, {type: 'square', over: 0, lp: 800});
+      buzz([18, 40, 18]);
+    },
+    pop() { if (!on()) return; tone(700, 0, .1, .12, {to: 980, over: .15}); },                 // 選んだ・送った
+    page() { if (!on() || set.sfxPage === false) return; tone(520, 0, .09, .07, {to: 760, over: .1}); },   // ページを進める
     fanfare(big = true) {
-      combo = 0; if (on()) { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => note(f, i * .11, .5, .15)); if (big) { note(1318.5, .5, .8, .13); note(1568, .62, 1, .11); } buzz([30, 60, 30]); }
+      combo = 0;
+      if (on()) { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * .11, .5, .15, {type: 'triangle'})); if (big) { tone(1318.5, .5, .8, .13, {type: 'triangle'}); tone(1568, .62, 1, .11); } buzz([30, 60, 30]); }
       burst(big ? 120 : 50);
     },
     reset() { combo = 0; },
@@ -41,6 +62,10 @@
       document.body.appendChild(el); setTimeout(() => el.remove(), 1600);
     },
   };
+
+  // page-turn sound: moving to another screen or the next question / step
+  const NAV = /(next|prev|back)$|^(tab|shellgo|pgo|pnav|psec|cbpart|cbresult|cbclose|ttclose|quizmenu|crclose|lclose|lopen|imopen|stopen|ewopen|csunit|cswunit|cspart|csseg|cbstart|ttstart|quiz|qmiss|qretry|hmiss|hplace)$/;
+  document.addEventListener('click', e => { const el = e.target.closest?.('[data-act]'); if (el && !el.disabled && NAV.test(el.dataset.act)) SFX.page(); }, true);
 
   /* ---------- confetti ---------- */
   const css = `
@@ -77,11 +102,22 @@
   markSent = wrapOk(markSent, (id, ok) => !!ok);
   const prevGrade = grade; grade = function (id, ok) { if (ok) SFX.pop(); return prevGrade.apply(this, arguments); };
 
-  // settings: a toggle at the top of 設定
+  // settings: sound controls at the top of 設定
   const prevSettings = vSettings;
   vSettings = function () {
-    return `<div class="sheet panel" style="gap:8px"><b>効果音・演出</b><label class="row" style="gap:8px"><input type="checkbox" data-act="sfxtoggle" ${S.settings.sfxOptIn === true ? 'checked' : ''}> 正解・不正解の効果音を鳴らす（初期設定はオフ。紙吹雪などの演出は音なしで表示されます）</label><div><button class="btn" data-act="sfxtest">鳴らしてみる</button></div></div>` + prevSettings();
+    const v = set.sfxVol;
+    return `<div class="sheet panel" style="gap:10px"><b>効果音</b>
+      <label class="row" style="gap:8px"><input type="checkbox" data-act="sfxtoggle" ${on() ? 'checked' : ''}> 正解・不正解の効果音を鳴らす</label>
+      <label class="row" style="gap:8px"><input type="checkbox" data-act="sfxpagetoggle" ${set.sfxPage !== false ? 'checked' : ''}> ページを進めるときの音を鳴らす</label>
+      <div class="row"><span class="small muted">音量</span><div class="seg" role="group" aria-label="効果音の音量">${[[.35, '小'], [.7, '中'], [1, '大']].map(([x, t]) => `<button data-act="sfxvol" data-v="${x}" aria-pressed="${v === x}">${t}</button>`).join('')}</div></div>
+      <div class="row"><button class="btn" data-act="sfxtest">正解の音</button><button class="btn" data-act="sfxtestng">不正解の音</button><button class="btn" data-act="sfxtestpage">ページの音</button></div>
+      <p class="small muted">上部バーのスピーカーボタンでも、すぐにオン・オフできます。英語の音声（発音）は再生ボタンを押したときだけ流れます。</p></div>` + prevSettings();
   };
-  ACT.sfxtoggle = (x, el) => { S.settings.sfxOptIn = el.checked; save(); };
-  ACT.sfxtest = () => { SFX.reset(); [0, 250, 500].forEach(t => setTimeout(() => SFX.ok(), t)); setTimeout(() => SFX.fanfare(false), 900); };
+  ACT.sfxtoggle = (x, el) => { set.sfxOn = el.checked; save(); render(); };
+  ACT.sfxpagetoggle = (x, el) => { set.sfxPage = el.checked; save(); };
+  ACT.sfxvol = x => { set.sfxVol = +x.v; save(); render(); SFX.reset(); SFX.ok(); };
+  ACT.sfxmute = () => { set.sfxOn = !on(); save(); render(); if (on()) SFX.pop(); };
+  ACT.sfxtest = () => { SFX.reset(); [0, 300, 600].forEach(t => setTimeout(() => SFX.ok(), t)); };
+  ACT.sfxtestng = () => SFX.ng();
+  ACT.sfxtestpage = () => { SFX.page(); setTimeout(() => SFX.page(), 300); };
 })();

@@ -205,7 +205,7 @@
   Object.assign(ACT, {
     cbstart: x => start(x.l, x.m || 'mock'),
     cbpart: x => { collect(); ui.cb.pi = +x.i; render(); scrollTo(0, 0); },
-    cbpick: x => { collect(); (ui.cb.ans[ui.cb.pi] = ui.cb.ans[ui.cb.pi] || {})[x.i] = x.j; render(); },
+    cbpick: x => { window.SFX?.pop(); collect(); (ui.cb.ans[ui.cb.pi] = ui.cb.ans[ui.cb.pi] || {})[x.i] = x.j; render(); },
     cbplay: x => play(+x.i),
     cbsubmit: () => { collect(); const E = CB[ui.cb.L], empty = E.parts.filter((p, i) => !ui.cb.ans[i] || !Object.keys(ui.cb.ans[i]).length).length; if (empty && !confirm(`未回答のパートが ${empty} つあります。採点しますか？`)) return; submit(); },
     cbquit: () => { if (confirm('模試を中断しますか？（記録されません）')) { clearInterval(timer); ui.cb = null; render(); } },

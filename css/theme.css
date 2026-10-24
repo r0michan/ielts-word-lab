@@ -222,3 +222,6 @@ kbd{border-radius:6px}
 .lsn-full .lk2{color:#0B7FA6;font-weight:800;border-bottom:2.5px solid #0B7FA6}
 .lsn-key{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;opacity:.8}
 .lsn-key i{width:12px;height:12px;border-radius:3px;display:inline-block}.lsn-key i.a{background:rgba(88,86,224,.35)}.lsn-key i.c{border-bottom:3px solid #0B7FA6;height:8px;margin-left:6px}
+.sfxbtn{margin-left:0;width:36px;height:36px;color:var(--accent)}
+.sfxbtn svg{width:21px;height:21px}
+.sfxbtn.off{color:var(--muted)}
